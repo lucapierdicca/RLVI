@@ -34,7 +34,7 @@ def train_loop(n_episode):
                 cost = agent.train(statelbl_to_img, id_to_orie)
                 print("--> %f" % cost)
             
-            s = s_.copy()
+            s = [i for i in s_]
 
 
             
