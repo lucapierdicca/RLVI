@@ -31,6 +31,7 @@ class DQN:
         self.replace_target_iter = replace_target_iter
         self.memory_size = memory_size
         self.batch_size = batch_size
+        self.hidden_units = hidden_units
 
 
         # total learning step
@@ -56,6 +57,8 @@ class DQN:
 
         self.sess.run(tf.global_variables_initializer())
         self.cost_his = []
+
+
 
 
     def build_net(self):
@@ -99,7 +102,7 @@ class DQN:
 
             flat_e = tf.layers.flatten(conv3_e, data_format='channels_last')
 
-            fc1_e = tf.layers.dense(flat_e, hidden_units, tf.nn.relu)
+            fc1_e = tf.layers.dense(flat_e, self.hidden_units, tf.nn.relu)
 
             self.q_eval = tf.layers.dense(fc1_e, self.n_actions)
 
@@ -134,7 +137,7 @@ class DQN:
 
             flat_t = tf.layers.flatten(conv3_t, data_format='channels_last')
 
-            fc1_t = tf.layers.dense(flat_t, hidden_units, tf.nn.relu)
+            fc1_t = tf.layers.dense(flat_t, self.hidden_units, tf.nn.relu)
 
             self.q_next = tf.layers.dense(fc1_t, self.n_actions)
 
