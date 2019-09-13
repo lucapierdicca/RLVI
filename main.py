@@ -10,6 +10,7 @@ def train_loop(n_episode):
     id_to_action = {v:k for k,v in action_space.items()}
 
     tot_step_counter=0
+    hist_episode_reward=[]
     for episode in range(n_episode):
 
         s = env.reset()
@@ -41,12 +42,15 @@ def train_loop(n_episode):
             tot_step_counter += 1
             episode_step_counter+=1
             
-            if d or episode_step_counter == 500: break
+            if d or episode_step_counter == 500:
+                hist_episode_reward.append(episode_reward) 
+                break
             
             
 
     print('Game over')
-    agent.plot_cost()
+    print(hist_episode_reward)
+    #agent.plot_cost()
 
 
 #--------------------------------------------
