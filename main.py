@@ -72,6 +72,6 @@ agent = DQN(env.n_actions,
 
 #--------------------------------------------
 
-n_episode = 300
+n_episode = 1000
 
 train_loop(n_episode)
