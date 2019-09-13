@@ -54,11 +54,15 @@ def train_loop(n_episode):
 env = Grid()
 
 agent = DQN(env.n_actions,
-              learning_rate=0.01,
-              gamma=0.9,
-              epsilon=0.9,
-              replace_target_iter=200,
-              memory_size=2000)
+            learning_rate=0.01,
+            gamma=0.9,
+            epsilon=0.2,
+            replace_target_iter=200,
+            memory_size=1000000,
+            batch_size=32,
+            e_increment=None,
+            output_graph=False,
+            hidden_units=256)
     
 
 

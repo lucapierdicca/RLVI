@@ -14,12 +14,13 @@ class DQN:
             n_actions,
             learning_rate=0.01,
             gamma=0.9,
-            epsilon=0.9,
+            epsilon=0.2,
             replace_target_iter=300,
             memory_size=500,
             batch_size=32,
             e_increment=None,
             output_graph=False,
+            hidden_units=256
     ):
         self.n_actions = n_actions
         self.learning_rate = learning_rate
@@ -98,7 +99,7 @@ class DQN:
 
             flat_e = tf.layers.flatten(conv3_e, data_format='channels_last')
 
-            fc1_e = tf.layers.dense(flat_e, 512, tf.nn.relu)
+            fc1_e = tf.layers.dense(flat_e, hidden_units, tf.nn.relu)
 
             self.q_eval = tf.layers.dense(fc1_e, self.n_actions)
 
@@ -133,7 +134,7 @@ class DQN:
 
             flat_t = tf.layers.flatten(conv3_t, data_format='channels_last')
 
-            fc1_t = tf.layers.dense(flat_t, 512, tf.nn.relu)
+            fc1_t = tf.layers.dense(flat_t, hidden_units, tf.nn.relu)
 
             self.q_next = tf.layers.dense(fc1_t, self.n_actions)
 
@@ -161,16 +162,16 @@ class DQN:
 
         # recupero l'img dello stato [int,int,int] -> img
         state_img = statelbl_to_img[str(state[0])+str(state[1])+id_to_orie[state[2]]]
-        # con Pr = epsilon scelgo la greedy
-        # con Pr = 1-epsilon ne scelgo una random (uniformemente) tra tutte
+        # con Pr = epsilon scelgo random (uniformemente) tra tutte
+        # con Pr = 1-epsilon ne scelgo greedy
         if np.random.uniform() < self.epsilon:
+            # choose a random action
+            action = np.random.randint(0, self.n_actions)
+        else:
             # get Q value for every action
             actions_value = self.sess.run(self.q_eval, feed_dict={self.s: [state_img]})
             # choose the greedy action
             action = np.argmax(actions_value)
-        else:
-            # choose a random action
-            action = np.random.randint(0, self.n_actions)
         return action
 
     def train(self, statelbl_to_img, id_to_orie):
