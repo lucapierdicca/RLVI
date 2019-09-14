@@ -20,9 +20,6 @@ def train_loop(n_episode):
     tot_step_counter=0
     hist_episode_reward=[]
 
-
-    
-
     for episode in range(n_episode):
 
         reset_history()
@@ -32,8 +29,6 @@ def train_loop(n_episode):
 
         episode_step_counter, episode_reward = 0,0
         while True:
-            
-
             # env.render()
             a = agent.choose_action(h, statelbl_to_img, id_to_orie)
             
@@ -45,7 +40,15 @@ def train_loop(n_episode):
             # a transition is [[history],int,int,[history_],int]
             agent.store_transition(h, a, r, h_, d)
             print("%d - %d - %d - %s - %s - %d - %s - %d - %d" % 
-                (episode, tot_step_counter, episode_step_counter, str(h), id_to_action[a], r, str(h_), d, episode_reward))
+                (episode, 
+                 tot_step_counter, 
+                 episode_step_counter, 
+                 str(h), 
+                 id_to_action[a], 
+                 r, 
+                 str(h_), 
+                 d, 
+                 episode_reward))
 
             if (tot_step_counter > 200) and (tot_step_counter % 5 == 0):
                 
@@ -54,12 +57,10 @@ def train_loop(n_episode):
             
             h = list(h_)
 
-
-            
             tot_step_counter += 1
             episode_step_counter+=1
             
-            if d or episode_step_counter == 40:
+            if d or episode_step_counter == 500:
                 hist_episode_reward.append(episode_reward) 
                 break
             
