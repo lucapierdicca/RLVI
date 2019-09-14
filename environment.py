@@ -3,6 +3,7 @@ import os
 from PIL import Image
 
 
+
 class Grid:
     def __init__(self):
 
@@ -18,7 +19,8 @@ class Grid:
         renders_path = './env_renders/'
         self.statelbl_to_img = { k[:3]:np.array(Image.open(renders_path+k)) \
             for k in os.listdir(renders_path)}
-        
+        print(self.statelbl_to_img.keys())
+
         # state = [row,col,orie_id]
         # state_img = [height,width,depth] (shape)
         self.init_state = [0,0,0]
@@ -34,7 +36,8 @@ class Grid:
 
     def reset(self):
         self.state = [0,0,0]
-        return [0,0,0]
+        self.turns = 0
+        return list(self.state)
 
     def step(self, action):
 
@@ -68,7 +71,7 @@ class Grid:
             reward = -1
             done = 0
 
-        return self.state, reward, done
+        return list(self.state), reward, done
 
     def render(self):
         pass

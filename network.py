@@ -12,6 +12,7 @@ class DQN:
     def __init__(
             self,
             n_actions,
+            n_history,
             learning_rate=0.01,
             gamma=0.9,
             epsilon=0.2,
@@ -23,6 +24,7 @@ class DQN:
             hidden_units=256
     ):
         self.n_actions = n_actions
+        self.n_history = n_history
         self.learning_rate = learning_rate
         self.gamma = gamma
         self.e_increment = e_increment
@@ -63,8 +65,8 @@ class DQN:
 
     def build_net(self):
         # ------------------ all inputs ------------------------
-        self.s = tf.placeholder(tf.float32, [None, 240, 240, 3], name='s')/255  # input State (batch, height, width, channel)
-        self.s_ = tf.placeholder(tf.float32, [None, 240, 240, 3], name='s_')/255  # input Next State
+        self.h = tf.placeholder(tf.float32, [None, 240, 240, 3*self.n_history], name='s')/255  # input State (batch, height, width, channel)
+        self.h_ = tf.placeholder(tf.float32, [None, 240, 240, 3*self.n_history], name='s_')/255  # input Next State
         self.r = tf.placeholder(tf.float32, [None, ], name='r')  # input Reward
         self.a = tf.placeholder(tf.int32, [None, ], name='a')  # input Action
         self.d = tf.placeholder(tf.float32, [None, ], name='d')  # input Done
@@ -73,8 +75,8 @@ class DQN:
 
         # ------------------ build evaluate_net ------------------
         with tf.variable_scope('eval_net'):
-            conv1_e = tf.layers.conv2d(   # shape (84, 84, 3)
-                inputs=self.s,
+            conv1_e = tf.layers.conv2d(   # shape (240, 240, 3*n_history)
+                inputs=self.h,
                 filters=32,
                 kernel_size=8,
                 strides=4,
@@ -108,8 +110,8 @@ class DQN:
 
         # ------------------ build target_net ------------------
         with tf.variable_scope('target_net'):
-            conv1_t = tf.layers.conv2d(   # shape (84, 84, 3)
-                inputs=self.s_,
+            conv1_t = tf.layers.conv2d(   # shape (240, 240, 3*n_history)
+                inputs=self.h_,
                 filters=32,
                 kernel_size=8,
                 strides=4,
@@ -158,13 +160,19 @@ class DQN:
                 var_list = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='eval_net'))
 
 
-    def store_transition(self, s, a, r, s_, d):
-        self.memory.append([s,a,r,s_,d])
+    def store_transition(self, h, a, r, h_, d):
+        self.memory.append([h,a,r,h_,d])
 
-    def choose_action(self, state, statelbl_to_img, id_to_orie):
+    def choose_action(self, history, statelbl_to_img, id_to_orie):
 
-        # recupero l'img dello stato [int,int,int] -> img
-        state_img = statelbl_to_img[str(state[0])+str(state[1])+id_to_orie[state[2]]]
+        # dalla history of state lbl a history of state img = stacked input images
+        history_img = [] 
+        for state in history:
+            history_img.append(statelbl_to_img[str(state[0])+str(state[1])+id_to_orie[state[2]]])
+        
+        if len(history_img) > 1:
+            history_img = [np.dstack(tuple(history_img))]
+        
         # con Pr = epsilon scelgo random (uniformemente) tra tutte
         # con Pr = 1-epsilon ne scelgo greedy
         if np.random.uniform() < self.epsilon:
@@ -172,7 +180,7 @@ class DQN:
             action = np.random.randint(0, self.n_actions)
         else:
             # get Q value for every action
-            actions_value = self.sess.run(self.q_eval, feed_dict={self.s: [state_img]})
+            actions_value = self.sess.run(self.q_eval, feed_dict={self.h: history_img})
             # choose the greedy action
             action = np.argmax(actions_value)
         return action
@@ -186,23 +194,45 @@ class DQN:
         # sample batch of transition from memory
         batch = random.sample(self.memory, self.batch_size)
 
-        batch_s, batch_a, batch_r, batch_s_, batch_d = [],[],[],[],[]
-
+        batch_h, batch_a, batch_r, batch_h_, batch_d = [],[],[],[],[]
+        
         for transition in batch:
-            batch_s.append(statelbl_to_img[str(transition[0][0])+str(transition[0][1])+id_to_orie[transition[0][2]]])
+            
+            history_img = []
+            for state in transition[0]:
+                history_img.append(statelbl_to_img[str(state[0])+str(state[1])+id_to_orie[state[2]]])
+                
+            if len(history_img) == 1:
+                history_img = history_img[0]
+            else:
+                history_img = np.dstack(tuple(history_img))
+
+            batch_h.append(history_img)
+            
             batch_a.append(transition[1])
             batch_r.append(transition[2])
-            batch_s_.append(statelbl_to_img[str(transition[3][0])+str(transition[3][1])+id_to_orie[transition[3][2]]])
+            
+            history_img = []
+            for state in transition[3]:
+                history_img.append(statelbl_to_img[str(state[0])+str(state[1])+id_to_orie[state[2]]])
+
+            if len(history_img) == 1:
+                history_img = history_img[0]
+            else:
+                history_img = np.dstack(tuple(history_img))
+
+            batch_h_.append(history_img)
+            
             batch_d.append(transition[4]) 
         
 
         _, cost = self.sess.run(
             [self.train_op, self.loss],
             feed_dict={
-                self.s: batch_s,
+                self.h: batch_h,
                 self.a: batch_a,
                 self.r: batch_r,
-                self.s_: batch_s_,
+                self.h_: batch_h_,
                 self.d: batch_d
             })
 
