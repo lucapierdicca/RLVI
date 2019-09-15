@@ -30,7 +30,10 @@ def train_loop(n_episode):
         episode_step_counter, episode_reward = 0,0
         while True:
             # env.render()
-            a = agent.choose_action(h, statelbl_to_img, id_to_orie)
+            a = agent.choose_action(h, 
+                statelbl_to_img, 
+                id_to_orie, 
+                tot_step_counter)
             
             s_, r, d = env.step(a)
             history.append(s_)
@@ -75,19 +78,17 @@ def train_loop(n_episode):
 
 env = Grid()
 
-n_history = 3
+n_history = 1
 history = deque([], maxlen=n_history)
 
 agent = DQN(env.n_actions,
             n_history,
             learning_rate=0.01,
             gamma=0.9,
-            epsilon=0.2,
+            epsilon=1.0,
             replace_target_iter=200,
-            memory_size=1000000,
+            memory_size=10000,
             batch_size=32,
-            e_increment=None,
-            output_graph=False,
             hidden_units=256)
     
 

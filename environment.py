@@ -65,7 +65,7 @@ class Grid:
         
         # reward 
         if self.state == self.goal_state:
-            reward = 1
+            reward = 10
             done = 1
         else:
             reward = -1

@@ -19,8 +19,6 @@ class DQN:
             replace_target_iter=300,
             memory_size=500,
             batch_size=32,
-            e_increment=None,
-            output_graph=False,
             hidden_units=256
     ):
         self.n_actions = n_actions
@@ -45,17 +43,17 @@ class DQN:
         # consist of [target_net, evaluate_net]
         self.build_net()
 
-        t_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='target_net')
-        e_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='eval_net')
+        t_params = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='target_net')
+        e_params = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='eval_net')
 
         with tf.variable_scope('hard_replacement'):
             self.target_replace_op = [tf.assign(t, e) for t, e in zip(t_params, e_params)]
 
         self.sess = tf.Session()
 
-        if output_graph:
-            # $ tensorboard --logdir=logs
-            tf.summary.FileWriter("logs/", self.sess.graph)
+        # if output_graph:
+        #     # $ tensorboard --logdir=logs
+        #     tf.summary.FileWriter("logs/", self.sess.graph)
 
         self.sess.run(tf.global_variables_initializer())
         self.cost_his = []
@@ -163,11 +161,11 @@ class DQN:
     def store_transition(self, h, a, r, h_, d):
         self.memory.append([h,a,r,h_,d])
 
-    def choose_action(self, history, statelbl_to_img, id_to_orie):
+    def choose_action(self, h, statelbl_to_img, id_to_orie):
 
         # dalla history of state lbl a history of state img = stacked input images
         history_img = [] 
-        for state in history:
+        for state in h:
             history_img.append(statelbl_to_img[str(state[0])+str(state[1])+id_to_orie[state[2]]])
         
         if len(history_img) > 1:
@@ -238,10 +236,10 @@ class DQN:
 
 
         self.cost_his.append(cost)
-
-        # increasing epsilon
-        self.epsilon = self.epsilon + self.e_increment if self.epsilon < self.e_max else self.e_max
         self.learn_step_counter += 1
+        # annealing epsilon
+        self.epsilon = (-0.9/(200.0)*self.learn_step_counter) + 1.0
+        
 
         return cost
 
