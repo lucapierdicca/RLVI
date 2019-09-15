@@ -161,6 +161,9 @@ class DQN:
 
     def choose_action(self, h, statelbl_to_img, id_to_orie):
 
+        print("--------------->%f" % self.epsilon)
+        
+
         # dalla history of state lbl a history of state img = stacked input images
         history_img = [] 
         for state in h:
@@ -186,6 +189,7 @@ class DQN:
         if self.learn_step_counter % self.replace_target_iter == 0:
             self.sess.run(self.target_replace_op)
             print('\ntarget_params_replaced\n')
+
 
         # sample batch of transition from memory
         batch = random.sample(self.memory, self.batch_size)
