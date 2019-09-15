@@ -32,8 +32,7 @@ def train_loop(n_episode):
             # env.render()
             a = agent.choose_action(h, 
                 statelbl_to_img, 
-                id_to_orie, 
-                tot_step_counter)
+                id_to_orie)
             
             s_, r, d = env.step(a)
             history.append(s_)
