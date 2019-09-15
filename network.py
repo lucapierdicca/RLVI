@@ -15,7 +15,7 @@ class DQN:
             n_history,
             learning_rate=0.01,
             gamma=0.9,
-            epsilon=0.2,
+            epsilon=1.0,
             replace_target_iter=300,
             memory_size=500,
             batch_size=32,
@@ -25,9 +25,7 @@ class DQN:
         self.n_history = n_history
         self.learning_rate = learning_rate
         self.gamma = gamma
-        self.e_increment = e_increment
-        self.e_max = epsilon
-        self.epsilon = 0 if e_increment is not None else epsilon
+        self.epsilon = epsilon
         self.replace_target_iter = replace_target_iter
         self.memory_size = memory_size
         self.batch_size = batch_size
@@ -238,7 +236,7 @@ class DQN:
         self.cost_his.append(cost)
         self.learn_step_counter += 1
         # annealing epsilon
-        self.epsilon = (-0.9/(200.0)*self.learn_step_counter) + 1.0
+        self.epsilon = (-0.9/(100000.0)*self.learn_step_counter) + 1.0
         
 
         return cost
