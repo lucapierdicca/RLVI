@@ -19,6 +19,7 @@ def train_loop(n_episode):
     id_to_action = {v:k for k,v in action_space.items()}
 
     tot_step_counter=0
+    cost = 0.0
 
     histories = {'episode_reward':[],
                  'max_Q':[],
@@ -31,20 +32,21 @@ def train_loop(n_episode):
         history.append(s)
         h = list(history)
 
-        episode_step_counter, episode_reward = 0,0
+        episode_step_counter, episode_reward, episode_max_Q, episode_cost = 0.0,0.0,0.0,0.0
         while True:
             # env.render()
             a, max_Q = agent.choose_action(h, 
                 statelbl_to_img, 
                 id_to_orie)
 
-            histories['max_Q'].append(max_Q)
+            episode_max_Q+=max_Q
             
             s_, r, d = env.step(a)
             history.append(s_)
             h_ = list(history)
 
             episode_reward+=r
+
             # a transition is [[history],int,int,[history_],int]
             agent.store_transition(h, a, r, h_, d)
             print("%d - %d - %d - %s - %s - %d - %s - %d - %d - %f" % 
@@ -61,8 +63,9 @@ def train_loop(n_episode):
 
             if (tot_step_counter > 5000) and (tot_step_counter % 5 == 0):
                 cost = agent.train(statelbl_to_img, id_to_orie)
-                histories['cost'].append(cost)
                 print("------> %f" % cost)
+
+            episode_cost+=cost
             
             h = list(h_)
 
@@ -71,7 +74,9 @@ def train_loop(n_episode):
 
    
             if d or episode_step_counter == 200:
-                histories['episode_reward'].append(episode_reward) 
+                histories['max_Q'].append(episode_max_Q/episode_step_counter)
+                histories['cost'].append(episode_cost/episode_step_counter)
+                histories['episode_reward'].append(episode_reward/episode_step_counter) 
                 break
             
             
@@ -94,9 +99,9 @@ agent = DQN(env.n_actions,
             epsilon=1.0,
             replace_target_iter=200,
             memory_size=500000,
-            batch_size=32,
+            batch_size=64,
             hidden_units=32)
     
 
-n_episode = 2000  
+n_episode = 5000  
 train_loop(n_episode)

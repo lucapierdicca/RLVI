@@ -258,7 +258,7 @@ class DQN:
 
         self.learn_step_counter += 1
         # annealing epsilon
-        self.epsilon = (-0.9/(120000.0)*self.learn_step_counter) + 1.0
+        self.epsilon = (-0.9/(70000.0)*self.learn_step_counter) + 1.0
         
 
         return cost
