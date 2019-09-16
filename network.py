@@ -4,8 +4,8 @@ import tensorflow.contrib as contrib
 from collections import deque
 import random
 
-np.random.seed(1)
-tf.set_random_seed(1)
+#np.random.seed(1)
+#tf.set_random_seed(1)
 
 
 # Deep Q Network
@@ -55,15 +55,14 @@ class DQN:
         #     tf.summary.FileWriter("logs/", self.sess.graph)
 
         self.sess.run(tf.global_variables_initializer())
-        self.cost_his = []
 
 
 
 
     def build_net(self):
         # ------------------ all inputs ------------------------
-        self.h = tf.placeholder(tf.float32, [None, 84, 84, 1*self.n_history], name='s')/255  # input State (batch, height, width, channel)
-        self.h_ = tf.placeholder(tf.float32, [None, 84, 84, 1*self.n_history], name='s_')/255  # input Next State
+        self.h = tf.placeholder(tf.float32, [None, 84, 84, 1*self.n_history], name='s')#/255  # input State (batch, height, width, channel)
+        self.h_ = tf.placeholder(tf.float32, [None, 84, 84, 1*self.n_history], name='s_')#/255  # input Next State
         self.r = tf.placeholder(tf.float32, [None, ], name='r')  # input Reward
         self.a = tf.placeholder(tf.int32, [None, ], name='a')  # input Action
         self.d = tf.placeholder(tf.float32, [None, ], name='d')  # input Done
@@ -197,7 +196,8 @@ class DQN:
             actions_value = self.sess.run(self.q_eval, feed_dict={self.h: history_img})
             # choose the greedy action
             action = np.argmax(actions_value)
-        return action
+            max_value = np.max(actions_value)
+        return action, max_value
 
     def train(self, statelbl_to_img, id_to_orie):
         # check to replace target parameters
@@ -252,7 +252,6 @@ class DQN:
             })
 
 
-        self.cost_his.append(cost)
         self.learn_step_counter += 1
         # annealing epsilon
         self.epsilon = (-0.9/(120000.0)*self.learn_step_counter) + 1.0
@@ -260,12 +259,9 @@ class DQN:
 
         return cost
 
-    def plot_cost(self):
-        import matplotlib.pyplot as plt
-        plt.plot(np.arange(len(self.cost_his)), self.cost_his)
-        plt.ylabel('Cost')
-        plt.xlabel('Training steps')
-        plt.show()
+
 
 if __name__ == '__main__':
     pass
+
+for i in a:

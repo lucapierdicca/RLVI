@@ -1,7 +1,7 @@
 from environment import Grid
 from network import DQN
 from collections import deque
-
+import pickle
 
 
 def reset_history():
@@ -18,7 +18,10 @@ def train_loop(n_episode):
     id_to_action = {v:k for k,v in action_space.items()}
 
     tot_step_counter=0
-    hist_episode_reward=[]
+
+    histories = {'episode_reward':[],
+                 'max_Q':[],
+                 'cost':[]}
 
     for episode in range(n_episode):
 
@@ -30,9 +33,11 @@ def train_loop(n_episode):
         episode_step_counter, episode_reward = 0,0
         while True:
             # env.render()
-            a = agent.choose_action(h, 
+            a, max_Q = agent.choose_action(h, 
                 statelbl_to_img, 
                 id_to_orie)
+
+            histories['max_Q'].append(max_Q)
             
             s_, r, d = env.step(a)
             history.append(s_)
@@ -41,7 +46,7 @@ def train_loop(n_episode):
             episode_reward+=r
             # a transition is [[history],int,int,[history_],int]
             agent.store_transition(h, a, r, h_, d)
-            print("%d - %d - %d - %s - %s - %d - %s - %d - %d" % 
+            print("%d - %d - %d - %s - %s - %d - %s - %d - %d - %f" % 
                 (episode, 
                  tot_step_counter, 
                  episode_step_counter, 
@@ -50,26 +55,30 @@ def train_loop(n_episode):
                  r, 
                  str(h_), 
                  d, 
-                 episode_reward))
+                 episode_reward,
+                 max_value))
 
             if (tot_step_counter > 200) and (tot_step_counter % 5 == 0):
                 
                 cost = agent.train(statelbl_to_img, id_to_orie)
+                histories['cost'].append(cost)
                 print("------> %f" % cost)
             
             h = list(h_)
 
             tot_step_counter += 1
             episode_step_counter+=1
+
+            if tot_step_counter % 50 == 0:
+                pickle.dump(histories, open('histories.pickle','wb'))
             
             if d or episode_step_counter == 500:
-                hist_episode_reward.append(episode_reward) 
+                histories['episode_reward'].append(episode_reward) 
                 break
             
             
 
     print('Game over')
-    print(hist_episode_reward)
     #agent.plot_cost()
 
 
@@ -77,7 +86,7 @@ def train_loop(n_episode):
 
 env = Grid()
 
-n_history = 2
+n_history = 1
 history = deque([], maxlen=n_history)
 
 agent = DQN(env.n_actions,
@@ -91,5 +100,5 @@ agent = DQN(env.n_actions,
             hidden_units=256)
     
 
-n_episode = 2000  
+n_episode = 200  
 train_loop(n_episode)
