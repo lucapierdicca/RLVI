@@ -59,7 +59,7 @@ def train_loop(n_episode):
                  episode_reward,
                  max_Q))
 
-            if (tot_step_counter > 1000) and (tot_step_counter % 5 == 0):
+            if (tot_step_counter > 5000) and (tot_step_counter % 5 == 0):
                 cost = agent.train(statelbl_to_img, id_to_orie)
                 histories['cost'].append(cost)
                 print("------> %f" % cost)
@@ -69,16 +69,13 @@ def train_loop(n_episode):
             tot_step_counter += 1
             episode_step_counter+=1
 
-
-            if tot_step_counter % 500 == 0:
-                pickle.dump(histories, open('histories.pickle','wb'))
-            
-            if d or episode_step_counter == 500:
+   
+            if d or episode_step_counter == 200:
                 histories['episode_reward'].append(episode_reward) 
                 break
             
             
-
+    pickle.dump(histories, open('histories.pickle','wb'))
     print('Game over')
     #agent.plot_cost()
 
