@@ -2,6 +2,7 @@ from environment import Grid
 from network import DQN
 from collections import deque
 import pickle
+from time import gmtime, strftime
 
 
 def reset_history():
@@ -69,8 +70,9 @@ def train_loop(n_episode):
             tot_step_counter += 1
             episode_step_counter+=1
 
-            if tot_step_counter % 50 == 0:
-                pickle.dump(histories, open('histories.pickle','wb'))
+
+            if tot_step_counter % 500 == 0:
+                pickle.dump(histories, open('histories'+strftime("%Y%m%d_%H%M%S", gmtime())+'.pickle','wb'))
             
             if d or episode_step_counter == 500:
                 histories['episode_reward'].append(episode_reward) 
@@ -86,7 +88,7 @@ def train_loop(n_episode):
 
 env = Grid()
 
-n_history = 3
+n_history = 2
 history = deque([], maxlen=n_history)
 
 agent = DQN(env.n_actions,
