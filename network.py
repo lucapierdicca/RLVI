@@ -82,29 +82,29 @@ class DQN:
                 trainable=True
             )           # -> (20, 20, 32)
 
-            conv2_e = tf.layers.conv2d(   # shape (20, 20, 32)
-                inputs=conv1_e,
-                filters=64,
-                kernel_size=4,
-                strides=2,
-                padding='same',
-                activation=tf.nn.relu,
-                kernel_initializer=contrib.layers.xavier_initializer(uniform=False),
-                trainable=True
-            )           # -> (9, 9, 64)
+            # conv2_e = tf.layers.conv2d(   # shape (20, 20, 32)
+            #     inputs=conv1_e,
+            #     filters=64,
+            #     kernel_size=4,
+            #     strides=2,
+            #     padding='same',
+            #     activation=tf.nn.relu,
+            #     kernel_initializer=contrib.layers.xavier_initializer(uniform=False),
+            #     trainable=True
+            # )           # -> (9, 9, 64)
 
-            conv3_e = tf.layers.conv2d(   # shape (9, 9, 64)
-                inputs=conv2_e,
-                filters=64,
-                kernel_size=3,
-                strides=1,
-                padding='same',
-                activation=tf.nn.relu,
-                kernel_initializer=contrib.layers.xavier_initializer(uniform=False),
-                trainable=True
-            )           # -> (7, 7, 64)
+            # conv3_e = tf.layers.conv2d(   # shape (9, 9, 64)
+            #     inputs=conv2_e,
+            #     filters=64,
+            #     kernel_size=3,
+            #     strides=1,
+            #     padding='same',
+            #     activation=tf.nn.relu,
+            #     kernel_initializer=contrib.layers.xavier_initializer(uniform=False),
+            #     trainable=True
+            # )           # -> (7, 7, 64)
 
-            flat_e = tf.layers.flatten(conv3_e, data_format='channels_last')
+            flat_e = tf.layers.flatten(conv1_e, data_format='channels_last')
 
             fc1_e = tf.layers.dense(flat_e, self.hidden_units, tf.nn.relu, trainable=True)
 
@@ -123,29 +123,29 @@ class DQN:
                 trainable=False
             )           # -> (20, 20, 32)
 
-            conv2_t = tf.layers.conv2d(   # shape (20, 20, 32)
-                inputs=conv1_t,
-                filters=64,
-                kernel_size=4,
-                strides=2,
-                padding='same',
-                activation=tf.nn.relu,
-                kernel_initializer=contrib.layers.xavier_initializer(uniform=False),
-                trainable=False
-            )           # -> (9, 9, 64)
+            # conv2_t = tf.layers.conv2d(   # shape (20, 20, 32)
+            #     inputs=conv1_t,
+            #     filters=64,
+            #     kernel_size=4,
+            #     strides=2,
+            #     padding='same',
+            #     activation=tf.nn.relu,
+            #     kernel_initializer=contrib.layers.xavier_initializer(uniform=False),
+            #     trainable=False
+            # )           # -> (9, 9, 64)
 
-            conv3_t = tf.layers.conv2d(   # shape (9, 9, 64)
-                inputs=conv2_t,
-                filters=64,
-                kernel_size=3,
-                strides=1,
-                padding='same',
-                activation=tf.nn.relu,
-                kernel_initializer=contrib.layers.xavier_initializer(uniform=False),
-                trainable=False
-            )           # -> (7, 7, 64)
+            # conv3_t = tf.layers.conv2d(   # shape (9, 9, 64)
+            #     inputs=conv2_t,
+            #     filters=64,
+            #     kernel_size=3,
+            #     strides=1,
+            #     padding='same',
+            #     activation=tf.nn.relu,
+            #     kernel_initializer=contrib.layers.xavier_initializer(uniform=False),
+            #     trainable=False
+            # )           # -> (7, 7, 64)
 
-            flat_t = tf.layers.flatten(conv3_t, data_format='channels_last')
+            flat_t = tf.layers.flatten(conv1_t, data_format='channels_last')
 
             fc1_t = tf.layers.dense(flat_t, self.hidden_units, tf.nn.relu,
                 trainable=False)
