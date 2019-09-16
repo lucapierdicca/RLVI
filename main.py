@@ -59,7 +59,7 @@ def train_loop(n_episode):
                  episode_reward,
                  max_Q))
 
-            if (tot_step_counter > 200) and (tot_step_counter % 5 == 0):
+            if (tot_step_counter > 1000) and (tot_step_counter % 5 == 0):
                 cost = agent.train(statelbl_to_img, id_to_orie)
                 histories['cost'].append(cost)
                 print("------> %f" % cost)
@@ -87,18 +87,18 @@ def train_loop(n_episode):
 
 env = Grid()
 
-n_history = 2
+n_history = 4
 history = deque([], maxlen=n_history)
 
 agent = DQN(env.n_actions,
             n_history,
             learning_rate=0.00025, #0.1
-            gamma=0.9,
+            gamma=0.99,
             epsilon=1.0,
-            replace_target_iter=50,
-            memory_size=1000000,
+            replace_target_iter=200,
+            memory_size=500000,
             batch_size=32,
-            hidden_units=256)
+            hidden_units=32)
     
 
 n_episode = 2000  
