@@ -1,5 +1,6 @@
 import numpy as np
 import tensorflow.compat.v1 as tf
+import tensorflow.contrib as contrib
 from collections import deque
 import random
 
@@ -61,8 +62,8 @@ class DQN:
 
     def build_net(self):
         # ------------------ all inputs ------------------------
-        self.h = tf.placeholder(tf.float32, [None, 240, 240, 3*self.n_history], name='s')/255  # input State (batch, height, width, channel)
-        self.h_ = tf.placeholder(tf.float32, [None, 240, 240, 3*self.n_history], name='s_')/255  # input Next State
+        self.h = tf.placeholder(tf.float32, [None, 84, 84, 1*self.n_history], name='s')/255  # input State (batch, height, width, channel)
+        self.h_ = tf.placeholder(tf.float32, [None, 84, 84, 1*self.n_history], name='s_')/255  # input Next State
         self.r = tf.placeholder(tf.float32, [None, ], name='r')  # input Reward
         self.a = tf.placeholder(tf.int32, [None, ], name='a')  # input Action
         self.d = tf.placeholder(tf.float32, [None, ], name='d')  # input Done
@@ -77,7 +78,8 @@ class DQN:
                 kernel_size=8,
                 strides=4,
                 padding='same',
-                activation=tf.nn.relu
+                activation=tf.nn.relu,
+                kernel_initializer=contrib.layers.xavier_initializer(uniform=False)
             )           # -> (20, 20, 32)
 
             conv2_e = tf.layers.conv2d(   # shape (20, 20, 32)
@@ -86,7 +88,8 @@ class DQN:
                 kernel_size=4,
                 strides=2,
                 padding='same',
-                activation=tf.nn.relu
+                activation=tf.nn.relu,
+                kernel_initializer=contrib.layers.xavier_initializer(uniform=False)
             )           # -> (9, 9, 64)
 
             conv3_e = tf.layers.conv2d(   # shape (9, 9, 64)
@@ -95,7 +98,8 @@ class DQN:
                 kernel_size=3,
                 strides=1,
                 padding='same',
-                activation=tf.nn.relu
+                activation=tf.nn.relu,
+                kernel_initializer=contrib.layers.xavier_initializer(uniform=False)
             )           # -> (7, 7, 64)
 
             flat_e = tf.layers.flatten(conv3_e, data_format='channels_last')
@@ -112,7 +116,8 @@ class DQN:
                 kernel_size=8,
                 strides=4,
                 padding='same',
-                activation=tf.nn.relu
+                activation=tf.nn.relu,
+                kernel_initializer=contrib.layers.xavier_initializer(uniform=False)
             )           # -> (20, 20, 32)
 
             conv2_t = tf.layers.conv2d(   # shape (20, 20, 32)
@@ -121,7 +126,8 @@ class DQN:
                 kernel_size=4,
                 strides=2,
                 padding='same',
-                activation=tf.nn.relu
+                activation=tf.nn.relu,
+                kernel_initializer=contrib.layers.xavier_initializer(uniform=False)
             )           # -> (9, 9, 64)
 
             conv3_t = tf.layers.conv2d(   # shape (9, 9, 64)
@@ -130,7 +136,8 @@ class DQN:
                 kernel_size=3,
                 strides=1,
                 padding='same',
-                activation=tf.nn.relu
+                activation=tf.nn.relu,
+                kernel_initializer=contrib.layers.xavier_initializer(uniform=False)
             )           # -> (7, 7, 64)
 
             flat_t = tf.layers.flatten(conv3_t, data_format='channels_last')
@@ -162,7 +169,7 @@ class DQN:
     def choose_action(self, h, statelbl_to_img, id_to_orie):
 
         print("--------------->%f" % self.epsilon)
-        
+
 
         # dalla history of state lbl a history of state img = stacked input images
         history_img = [] 

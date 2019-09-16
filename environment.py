@@ -17,8 +17,13 @@ class Grid:
         self.id_to_orie = {v:k for k,v in self.orie_to_id.items()}
 
         renders_path = './env_renders/'
-        self.statelbl_to_img = { k[:3]:np.array(Image.open(renders_path+k)) \
-            for k in os.listdir(renders_path)}
+        self.statelbl_to_img = {}
+        for filename in os.listdir(renders_path):
+            img = Image.open(renders_path+filename)
+            img = img.convert('L')
+            img = img.resize((84,84), Image.ANTIALIAS)
+            img = np.array(img).reshape((84,84,1))
+            self.statelbl_to_img[filename[:3]] = img
         print(self.statelbl_to_img.keys())
 
         # state = [row,col,orie_id]
