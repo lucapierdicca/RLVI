@@ -23,7 +23,8 @@ def train_loop(n_episode):
 
     histories = {'episode_reward':[],
                  'max_Q':[],
-                 'cost':[]}
+                 'cost':[],
+                 'epsilon':[]}
 
     for episode in range(n_episode):
 
@@ -32,8 +33,11 @@ def train_loop(n_episode):
         history.append(s)
         h = list(history)
 
-        episode_step_counter, episode_reward, episode_max_Q, episode_cost = 0.0,0.0,0.0,0.0
+        episode_step_counter, episode_reward, episode_max_Q, episode_cost, episode_epsilon = 0.0,0.0,0.0,0.0,0.0
         while True:
+
+            episode_epsilon+=agent.epsilon
+
             # env.render()
             a, max_Q = agent.choose_action(h, 
                 statelbl_to_img, 
@@ -76,7 +80,8 @@ def train_loop(n_episode):
             if d or episode_step_counter == 200:
                 histories['max_Q'].append(episode_max_Q/episode_step_counter)
                 histories['cost'].append(episode_cost/episode_step_counter)
-                histories['episode_reward'].append(episode_reward/episode_step_counter) 
+                histories['episode_reward'].append(episode_reward/episode_step_counter)
+                histories['epsilon'].append(episode_epsilon/episode_step_counter)
                 break
             
             
@@ -99,9 +104,9 @@ agent = DQN(env.n_actions,
             epsilon=1.0,
             replace_target_iter=200,
             memory_size=500000,
-            batch_size=64,
+            batch_size=32,
             hidden_units=32)
     
 
-n_episode = 5000  
+n_episode = 30  
 train_loop(n_episode)
