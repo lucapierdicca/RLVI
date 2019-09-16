@@ -79,7 +79,8 @@ class DQN:
                 strides=4,
                 padding='same',
                 activation=tf.nn.relu,
-                kernel_initializer=contrib.layers.xavier_initializer(uniform=False)
+                kernel_initializer=contrib.layers.xavier_initializer(uniform=False),
+                trainable=True
             )           # -> (20, 20, 32)
 
             conv2_e = tf.layers.conv2d(   # shape (20, 20, 32)
@@ -89,7 +90,8 @@ class DQN:
                 strides=2,
                 padding='same',
                 activation=tf.nn.relu,
-                kernel_initializer=contrib.layers.xavier_initializer(uniform=False)
+                kernel_initializer=contrib.layers.xavier_initializer(uniform=False),
+                trainable=True
             )           # -> (9, 9, 64)
 
             conv3_e = tf.layers.conv2d(   # shape (9, 9, 64)
@@ -99,14 +101,15 @@ class DQN:
                 strides=1,
                 padding='same',
                 activation=tf.nn.relu,
-                kernel_initializer=contrib.layers.xavier_initializer(uniform=False)
+                kernel_initializer=contrib.layers.xavier_initializer(uniform=False),
+                trainable=True
             )           # -> (7, 7, 64)
 
             flat_e = tf.layers.flatten(conv3_e, data_format='channels_last')
 
-            fc1_e = tf.layers.dense(flat_e, self.hidden_units, tf.nn.relu)
+            fc1_e = tf.layers.dense(flat_e, self.hidden_units, tf.nn.relu, trainable=True)
 
-            self.q_eval = tf.layers.dense(fc1_e, self.n_actions)
+            self.q_eval = tf.layers.dense(fc1_e, self.n_actions, trainable=True)
 
         # ------------------ build target_net ------------------
         with tf.variable_scope('target_net'):
@@ -117,7 +120,8 @@ class DQN:
                 strides=4,
                 padding='same',
                 activation=tf.nn.relu,
-                kernel_initializer=contrib.layers.xavier_initializer(uniform=False)
+                kernel_initializer=contrib.layers.xavier_initializer(uniform=False),
+                trainable=False
             )           # -> (20, 20, 32)
 
             conv2_t = tf.layers.conv2d(   # shape (20, 20, 32)
@@ -127,7 +131,8 @@ class DQN:
                 strides=2,
                 padding='same',
                 activation=tf.nn.relu,
-                kernel_initializer=contrib.layers.xavier_initializer(uniform=False)
+                kernel_initializer=contrib.layers.xavier_initializer(uniform=False),
+                trainable=False
             )           # -> (9, 9, 64)
 
             conv3_t = tf.layers.conv2d(   # shape (9, 9, 64)
@@ -137,14 +142,17 @@ class DQN:
                 strides=1,
                 padding='same',
                 activation=tf.nn.relu,
-                kernel_initializer=contrib.layers.xavier_initializer(uniform=False)
+                kernel_initializer=contrib.layers.xavier_initializer(uniform=False),
+                trainable=False
             )           # -> (7, 7, 64)
 
             flat_t = tf.layers.flatten(conv3_t, data_format='channels_last')
 
-            fc1_t = tf.layers.dense(flat_t, self.hidden_units, tf.nn.relu)
+            fc1_t = tf.layers.dense(flat_t, self.hidden_units, tf.nn.relu,
+                trainable=False)
 
-            self.q_next = tf.layers.dense(fc1_t, self.n_actions)
+            self.q_next = tf.layers.dense(fc1_t, self.n_actions,
+                trainable=False)
 
 
         with tf.variable_scope('q_target'):
@@ -159,8 +167,8 @@ class DQN:
             # la media delle squared differenceS (una per ogni elemento del batch che gli dai in input)
             self.loss = tf.reduce_mean(tf.squared_difference(q_target, q_eval_wrt_a, name='TD_error'))
         with tf.variable_scope('train'):
-            self.train_op = tf.train.RMSPropOptimizer(self.learning_rate).minimize(self.loss, 
-                var_list = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='eval_net'))
+            #self.train_op = tf.train.RMSPropOptimizer(self.learning_rate).minimize(self.loss, var_list = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='eval_net'))
+            self.train_op = tf.train.RMSPropOptimizer(self.learning_rate).minimize(self.loss)
 
 
     def store_transition(self, h, a, r, h_, d):

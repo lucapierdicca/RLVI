@@ -82,14 +82,14 @@ history = deque([], maxlen=n_history)
 
 agent = DQN(env.n_actions,
             n_history,
-            learning_rate=0.01,
+            learning_rate=0.00025, #0.1
             gamma=0.9,
             epsilon=1.0,
             replace_target_iter=200,
-            memory_size=10000,
+            memory_size=1000000,
             batch_size=32,
             hidden_units=256)
     
 
-n_episode = 1000  
+n_episode = 2000  
 train_loop(n_episode)
