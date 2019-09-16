@@ -186,18 +186,22 @@ class DQN:
         if len(history_img) > 1:
             history_img = [np.dstack(tuple(history_img))]
         
+
         # con Pr = epsilon scelgo random (uniformemente) tra tutte
         # con Pr = 1-epsilon ne scelgo greedy
+
+        # get Q value for every action
+        actions_value = self.sess.run(self.q_eval, feed_dict={self.h: history_img})
+        max_Q = np.max(actions_value)
+        
         if np.random.uniform() < self.epsilon:
             # choose a random action
             action = np.random.randint(0, self.n_actions)
         else:
-            # get Q value for every action
-            actions_value = self.sess.run(self.q_eval, feed_dict={self.h: history_img})
             # choose the greedy action
             action = np.argmax(actions_value)
-            max_value = np.max(actions_value)
-        return action, max_value
+            
+        return action, max_Q
 
     def train(self, statelbl_to_img, id_to_orie):
         # check to replace target parameters
@@ -263,5 +267,3 @@ class DQN:
 
 if __name__ == '__main__':
     pass
-
-for i in a:

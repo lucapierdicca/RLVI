@@ -56,7 +56,7 @@ def train_loop(n_episode):
                  str(h_), 
                  d, 
                  episode_reward,
-                 max_value))
+                 max_Q))
 
             if (tot_step_counter > 200) and (tot_step_counter % 5 == 0):
                 
@@ -86,7 +86,7 @@ def train_loop(n_episode):
 
 env = Grid()
 
-n_history = 1
+n_history = 3
 history = deque([], maxlen=n_history)
 
 agent = DQN(env.n_actions,
@@ -100,5 +100,5 @@ agent = DQN(env.n_actions,
             hidden_units=256)
     
 
-n_episode = 200  
+n_episode = 2000  
 train_loop(n_episode)
