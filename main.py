@@ -77,7 +77,7 @@ def train_loop(n_episode):
 
 env = Grid()
 
-n_history = 1
+n_history = 2
 history = deque([], maxlen=n_history)
 
 agent = DQN(env.n_actions,
