@@ -4,7 +4,7 @@ import sys
 import os
 
 
-histories = pickle.load(open("histories.pickle","rb"))
+histories = pickle.load(open("histories.pickle","rb"), encoding='latin1')
 
 for index,(f_name,values) in enumerate(histories.items()):
 	plt.subplot(1,3,index+1)
