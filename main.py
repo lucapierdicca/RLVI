@@ -105,8 +105,8 @@ agent = DQN(env.n_actions,
             replace_target_iter=200,
             memory_size=500000,
             batch_size=32,
-            hidden_units=32)
+            hidden_units=256)
     
 
-n_episode = 30  
+n_episode = 5000 
 train_loop(n_episode)
