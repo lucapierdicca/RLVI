@@ -61,8 +61,8 @@ class DQN:
 
     def build_net(self):
         # ------------------ all inputs ------------------------
-        self.h = tf.placeholder(tf.float32, [None, 84, 84, 1*self.n_history], name='s')#/255  # input State (batch, height, width, channel)
-        self.h_ = tf.placeholder(tf.float32, [None, 84, 84, 1*self.n_history], name='s_')#/255  # input Next State
+        self.h = tf.placeholder(tf.float32, [None, 84, 84, 1*self.n_history], name='s')/255  # input State (batch, height, width, channel)
+        self.h_ = tf.placeholder(tf.float32, [None, 84, 84, 1*self.n_history], name='s_')/255  # input Next State
         self.r = tf.placeholder(tf.float32, [None, ], name='r')  # input Reward
         self.a = tf.placeholder(tf.int32, [None, ], name='a')  # input Action
         self.d = tf.placeholder(tf.float32, [None, ], name='d')  # input Done

@@ -1,10 +1,9 @@
 import pickle
 import matplotlib.pyplot as plt
 import sys
+import os
 
 
-
- 
 histories = pickle.load(open("histories.pickle","rb"))
 
 for index,(f_name,values) in enumerate(histories.items()):
