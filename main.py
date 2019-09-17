@@ -65,9 +65,11 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
 
             if (tot_step_counter > 5000) and (tot_step_counter % offset_train == 0):
                 cost = agent.train(statelbl_to_img, id_to_orie)
+                print('********* TRAIN ********')
 
             if (tot_step_counter > 5000) and (tot_step_counter % offset_copy == 0):
                 agent.copy_vars()
+                print('********* COPY *********')
 
             h = list(h_)
 
