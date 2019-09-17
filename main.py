@@ -104,7 +104,7 @@ history = deque([], maxlen=n_history)
 
 agent = DQN(env.n_actions,
             n_history,
-            learning_rate=0.0025, #0.1
+            learning_rate=0.00025, #0.1
             gamma=0.99,
             epsilon=1.0,
             memory_size=500000,
@@ -114,8 +114,8 @@ agent = DQN(env.n_actions,
 
 n_episode = 5000
 offset_train = 5
-offset_copy = 100
-max_episode = 200
+offset_copy = 200
+max_episode = 300
 
 train_loop(n_episode, 
     offset_train, 
