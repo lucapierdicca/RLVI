@@ -4,9 +4,6 @@ import tensorflow.contrib as contrib
 from collections import deque
 import random
 
-#np.random.seed(1)
-#tf.set_random_seed(1)
-
 
 # Deep Q Network
 class DQN:
@@ -17,7 +14,6 @@ class DQN:
             learning_rate=0.01,
             gamma=0.9,
             epsilon=1.0,
-            replace_target_iter=300,
             memory_size=500,
             batch_size=32,
             hidden_units=256
@@ -27,7 +23,6 @@ class DQN:
         self.learning_rate = learning_rate
         self.gamma = gamma
         self.epsilon = epsilon
-        self.replace_target_iter = replace_target_iter
         self.memory_size = memory_size
         self.batch_size = batch_size
         self.hidden_units = hidden_units
@@ -39,38 +34,32 @@ class DQN:
         # experience replay memory
         self.memory = deque([], maxlen=memory_size)
 
-        # consist of [target_net, evaluate_net]
-        self.build_net()
-
-        t_params = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='target_net')
-        e_params = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='eval_net')
-
-        with tf.variable_scope('hard_replacement'):
-            self.target_replace_op = [tf.assign(t, e) for t, e in zip(t_params, e_params)]
-
+        self.create_NNs()
         self.sess = tf.Session()
-
-        # if output_graph:
-        #     # $ tensorboard --logdir=logs
-        #     tf.summary.FileWriter("logs/", self.sess.graph)
-
         self.sess.run(tf.global_variables_initializer())
+        self.copy_vars()
+
+        # tf.summary.FileWriter("logs/", self.sess.graph)
+
+        
 
 
 
 
-    def build_net(self):
-        # ------------------ all inputs ------------------------
-        self.h = tf.placeholder(tf.float32, [None, 84, 84, 1*self.n_history], name='s')/255  # input State (batch, height, width, channel)
-        self.h_ = tf.placeholder(tf.float32, [None, 84, 84, 1*self.n_history], name='s_')/255  # input Next State
-        self.r = tf.placeholder(tf.float32, [None, ], name='r')  # input Reward
-        self.a = tf.placeholder(tf.int32, [None, ], name='a')  # input Action
-        self.d = tf.placeholder(tf.float32, [None, ], name='d')  # input Done
+    def create_NNs(self):
+        # ------------------ Placeholders ------------------------
+        self.h = tf.placeholder(tf.float32, [None, 84, 84, 1*self.n_history], name='h')/255 
+        self.h_ = tf.placeholder(tf.float32, [None, 84, 84, 1*self.n_history], name='h_')/255 
+        self.r = tf.placeholder(tf.float32, [None, ], name='r')  
+        self.a = tf.placeholder(tf.int32, [None, ], name='a')  
+        self.d = tf.placeholder(tf.float32, [None, ], name='d')  
 
         #w_initializer, b_initializer = tf.random_normal_initializer(0., 0.3), tf.constant_initializer(0.1)
 
-        # ------------------ build evaluate_net ------------------
-        with tf.variable_scope('eval_net'):
+        
+
+        # ------------------ Conv Q ------------------
+        with tf.variable_scope('Q'):
             conv1_e = tf.layers.conv2d(   # shape (240, 240, 3*n_history)
                 inputs=self.h,
                 filters=32,
@@ -105,13 +94,13 @@ class DQN:
             )           # -> (7, 7, 64)
 
             flat_e = tf.layers.flatten(conv3_e, data_format='channels_last')
-
             fc1_e = tf.layers.dense(flat_e, self.hidden_units, tf.nn.relu, trainable=True)
+            self.q = tf.layers.dense(fc1_e, self.n_actions, trainable=True)
 
-            self.q_eval = tf.layers.dense(fc1_e, self.n_actions, trainable=True)
+        
 
-        # ------------------ build target_net ------------------
-        with tf.variable_scope('target_net'):
+        # ------------------ Conv Q_tgt ------------------
+        with tf.variable_scope('Q_tgt'):
             conv1_t = tf.layers.conv2d(   # shape (240, 240, 3*n_history)
                 inputs=self.h_,
                 filters=32,
@@ -119,7 +108,6 @@ class DQN:
                 strides=4,
                 padding='same',
                 activation=tf.nn.relu,
-                kernel_initializer=contrib.layers.xavier_initializer(uniform=False),
                 trainable=False
             )           # -> (20, 20, 32)
 
@@ -130,7 +118,6 @@ class DQN:
                 strides=2,
                 padding='same',
                 activation=tf.nn.relu,
-                kernel_initializer=contrib.layers.xavier_initializer(uniform=False),
                 trainable=False
             )           # -> (9, 9, 64)
 
@@ -141,39 +128,39 @@ class DQN:
                 strides=1,
                 padding='same',
                 activation=tf.nn.relu,
-                kernel_initializer=contrib.layers.xavier_initializer(uniform=False),
                 trainable=False
             )           # -> (7, 7, 64)
 
             flat_t = tf.layers.flatten(conv3_t, data_format='channels_last')
-
-            fc1_t = tf.layers.dense(flat_t, self.hidden_units, tf.nn.relu,
-                trainable=False)
-
-            self.q_next = tf.layers.dense(fc1_t, self.n_actions,
-                trainable=False)
+            fc1_t = tf.layers.dense(flat_t, self.hidden_units, tf.nn.relu, trainable=False)
+            self.q_tgt = tf.layers.dense(fc1_t, self.n_actions, trainable=False)
 
 
-        with tf.variable_scope('q_target'):
-            # reduce_max ritorna il massimo (wrt a) di q_next
-            q_target = self.r + self.gamma * tf.reduce_max(self.q_next, axis=1, name='Qmax_s_') * (1-self.d)    # shape=(None, )
-            #q_target = tf.stop_gradient(q_target)
-        with tf.variable_scope('q_eval'):
+            # --------------- Copying -------------------
+            self.copy_vars_op = [tf.assign(tgt, nor) for tgt, nor in zip(tf.trainable_variables('Q_tgt'), 
+                tf.trainable_variables('Q'))]
+
+
+            # ---------------- Training ---------------------
+            # reduce_max ritorna il massimo (wrt a) di q_tgt
+            target = self.r + (self.gamma*tf.reduce_max(self.q_tgt, axis=1)*(1-self.d))
+    
             a_indices = tf.stack([tf.range(tf.shape(self.a)[0], dtype=tf.int32), self.a], axis=1)
-            # in questo modo ottengo il valore di q_eval dato lo stato e una specifica azione
-            q_eval_wrt_a = tf.gather_nd(params=self.q_eval, indices=a_indices)    # shape=(None, )
-        with tf.variable_scope('loss'):
+            # in questo modo ottengo il valore di q dato lo stato e una specifica azione
+            q_wrt_a = tf.gather_nd(params=self.q, indices=a_indices)    # shape=(None, )
             # la media delle squared differenceS (una per ogni elemento del batch che gli dai in input)
-            self.loss = tf.reduce_mean(tf.squared_difference(q_target, q_eval_wrt_a, name='TD_error'))
-        with tf.variable_scope('train'):
-            #self.train_op = tf.train.RMSPropOptimizer(self.learning_rate).minimize(self.loss, var_list = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='eval_net'))
+            self.loss = tf.reduce_mean(tf.squared_difference(target, q_wrt_a))
+            
             self.train_op = tf.train.RMSPropOptimizer(self.learning_rate).minimize(self.loss)
 
+
+    def copy_vars(self):
+        self.sess.run(self.copy_vars_op)
 
     def store_transition(self, h, a, r, h_, d):
         self.memory.append([h,a,r,h_,d])
 
-    def choose_action(self, h, statelbl_to_img, id_to_orie):
+    def get_action(self, h, statelbl_to_img, id_to_orie):
 
         print("--------------->%f" % self.epsilon)
 
@@ -191,7 +178,7 @@ class DQN:
         # con Pr = 1-epsilon ne scelgo greedy
 
         # get Q value for every action
-        actions_value = self.sess.run(self.q_eval, feed_dict={self.h: history_img})
+        actions_value = self.sess.run(self.q, feed_dict={self.h: history_img})
         max_Q = np.max(actions_value)
         
         if np.random.uniform() < self.epsilon:
@@ -203,12 +190,8 @@ class DQN:
             
         return action, max_Q
 
+    
     def train(self, statelbl_to_img, id_to_orie):
-        # check to replace target parameters
-        if self.learn_step_counter % self.replace_target_iter == 0:
-            self.sess.run(self.target_replace_op)
-            print('\ntarget_params_replaced\n')
-
 
         # sample batch of transition from memory
         batch = random.sample(self.memory, self.batch_size)
@@ -256,9 +239,8 @@ class DQN:
             })
 
 
-        self.learn_step_counter += 1
         # annealing epsilon
-        self.epsilon = (-0.9/(150000.0)*self.learn_step_counter) + 1.0
+         self.epsilon = (-0.9/(220000.0)*self.learn_step_counter) + 1.0
         
 
         return cost

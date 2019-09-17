@@ -11,7 +11,8 @@ def reset_history():
     for i in range(history.maxlen):
         history.append(['_','_',0])
 
-def train_loop(n_episode):
+
+def train_loop(n_episode, offset_train, offset_copy, max_episode):
 
     global env
     statelbl_to_img, id_to_orie = env.get_renders()
@@ -19,7 +20,7 @@ def train_loop(n_episode):
     id_to_action = {v:k for k,v in action_space.items()}
 
     tot_step_counter=0
-    cost = 0.0
+    cost=0.0
 
     histories = {'episode_reward':[],
                  'max_Q':[],
@@ -33,23 +34,20 @@ def train_loop(n_episode):
         history.append(s)
         h = list(history)
 
-        episode_step_counter, episode_reward, episode_max_Q, episode_cost, episode_epsilon = 0.0,0.0,0.0,0.0,0.0
+        episode_step_counter=0.0 
+        episode_reward=0.0
+        episode_max_Q=0.0
+        episode_cost=0.0
+        episode_epsilon=0.0
+
         while True:
 
-            episode_epsilon+=agent.epsilon
-
             # env.render()
-            a, max_Q = agent.choose_action(h, 
-                statelbl_to_img, 
-                id_to_orie)
+            a, max_Q = agent.get_action(h, statelbl_to_img, id_to_orie)
 
-            episode_max_Q+=max_Q
-            
             s_, r, d = env.step(a)
             history.append(s_)
             h_ = list(history)
-
-            episode_reward+=r
 
             # a transition is [[history],int,int,[history_],int]
             agent.store_transition(h, a, r, h_, d)
@@ -65,19 +63,24 @@ def train_loop(n_episode):
                  episode_reward,
                  max_Q))
 
-            if (tot_step_counter > 5000) and (tot_step_counter % 5 == 0):
+            if (tot_step_counter > 5000) and (tot_step_counter % offset_train == 0):
                 cost = agent.train(statelbl_to_img, id_to_orie)
-                print("------> %f" % cost)
 
-            episode_cost+=cost
-            
+            if (tot_step_counter > 5000) and (tot_step_counter % offset_copy == 0):
+                agent.copy_vars()
+
             h = list(h_)
 
-            tot_step_counter += 1
-            episode_step_counter+=1
+            episode_epsilon+=agent.epsilon
+            episode_max_Q+=max_Q
+            episode_reward+=r
+            episode_cost+=cost
 
+            episode_step_counter+=1
+            tot_step_counter += 1
+            
    
-            if d or episode_step_counter == 200:
+            if d or episode_step_counter == max_episode:
                 histories['max_Q'].append(episode_max_Q/episode_step_counter)
                 histories['cost'].append(episode_cost/episode_step_counter)
                 histories['episode_reward'].append(episode_reward/episode_step_counter)
@@ -99,14 +102,20 @@ history = deque([], maxlen=n_history)
 
 agent = DQN(env.n_actions,
             n_history,
-            learning_rate=0.00025, #0.1
+            learning_rate=0.0025, #0.1
             gamma=0.99,
             epsilon=1.0,
-            replace_target_iter=200,
             memory_size=500000,
             batch_size=32,
             hidden_units=256)
     
 
-n_episode = 5000 
-train_loop(n_episode)
+n_episode = 5000
+offset_train = 5
+offset_copy = 100
+max_episode = 200
+
+train_loop(n_episode, 
+    offset_train, 
+    offset_copy,
+    max_episode)
