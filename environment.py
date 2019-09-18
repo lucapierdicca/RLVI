@@ -73,7 +73,7 @@ class Grid:
             reward = 10.0
             done = 1.0
         else:
-            reward = -0.01
+            reward = -1
             done = 0.0
 
         return list(self.state), reward, done
