@@ -29,7 +29,7 @@ class Grid:
         # state = [row,col,orie_id]
         # state_img = [height,width,depth] (shape)
         self.init_state = [0,0,0]
-        self.goal_state = [1,4,1]
+        self.goal_state = [1,3,1]
         
         self.state = self.init_state
 

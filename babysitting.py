@@ -9,7 +9,7 @@ histories = pickle.load(open("histories.pickle","rb"), encoding='latin1')
 print(histories)
 
 for index,(f_name,values) in enumerate(histories.items()):
-	plt.subplot(1,4,index+1)
+	plt.subplot(4,1,index+1)
 		
 	plt.plot(values)
 	plt.ylabel(f_name)
