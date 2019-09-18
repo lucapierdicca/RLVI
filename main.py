@@ -105,7 +105,7 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
 
 env = Grid()
 
-n_history = 4
+n_history = 2
 history = deque([], maxlen=n_history)
 
 agent = DQN(env.n_actions,
@@ -119,7 +119,7 @@ agent = DQN(env.n_actions,
     
 
 n_episode = 2000
-offset_train = 10
+offset_train = 100
 offset_copy = 200
 max_episode = 1000
 
