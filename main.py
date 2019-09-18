@@ -121,7 +121,7 @@ agent = DQN(env.n_actions,
 n_episode = 2000
 offset_train = 5
 offset_copy = 200
-max_episode = 1000
+max_episode = 300
 
 train_loop(n_episode, 
     offset_train, 
