@@ -68,13 +68,18 @@ class Grid:
                 self.state[2] = (4-(abs(self.turns)%4))%4
 
         
-        # reward 
+        # reward
+        reward = min(10, 1/np.power(np.power(self.state[0]-self.goal_state[0],2)+np.power(self.state[1]-self.goal_state[1],2),0.5))
+
+        
         if self.state == self.goal_state:
-            reward = 10.0
+            #reward = 10.0
             done = 1.0
         else:
-            reward = -0.01
+            #reward = -0.01
             done = 0.0
+
+         
 
         return list(self.state), reward, done
 

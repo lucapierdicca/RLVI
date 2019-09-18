@@ -88,7 +88,7 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
                         episode_epsilon/episode_step_counter, tot_step_counter, 
                         episode_max_Q/episode_step_counter, 
                         episode_cost/episode_step_counter, 
-                        episode_reward))
+                        episode_reward/episode_step_counter))
                 histories['max_Q'].append(episode_max_Q/episode_step_counter)
                 histories['cost'].append(episode_cost/episode_step_counter)
                 histories['episode_reward'].append(episode_reward)
@@ -105,7 +105,7 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
 
 env = Grid()
 
-n_history = 4
+n_history = 2
 history = deque([], maxlen=n_history)
 
 agent = DQN(env.n_actions,
@@ -121,7 +121,7 @@ agent = DQN(env.n_actions,
 n_episode = 2000
 offset_train = 5
 offset_copy = 200
-max_episode = 300
+max_episode = 1000
 
 train_loop(n_episode, 
     offset_train, 
