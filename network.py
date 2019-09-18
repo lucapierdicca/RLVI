@@ -151,7 +151,7 @@ class DQN:
             # la media delle squared differenceS (una per ogni elemento del batch che gli dai in input)
             self.loss = tf.reduce_mean(tf.squared_difference(target, q_wrt_a))
             
-            self.train_op = tf.train.RMSPropOptimizer(self.learning_rate).minimize(self.loss)
+            self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
 
 
     def copy_vars(self):
