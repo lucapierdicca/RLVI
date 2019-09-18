@@ -63,11 +63,11 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
             #      episode_reward,
             #      max_Q))
 
-            if (tot_step_counter > 5000) and (tot_step_counter % offset_train == 0):
+            if (tot_step_counter > 10000) and (tot_step_counter % offset_train == 0):
                 cost = agent.train(statelbl_to_img, id_to_orie)
                 #print('********* TRAIN ********')
 
-            if (tot_step_counter > 5000) and (tot_step_counter % offset_copy == 0):
+            if (tot_step_counter > 10000) and (tot_step_counter % offset_copy == 0):
                 agent.copy_vars()
                 #print('********* COPY *********')
 
@@ -119,8 +119,8 @@ agent = DQN(env.n_actions,
     
 
 n_episode = 2000
-offset_train = 15
-offset_copy = 40
+offset_train = 5
+offset_copy = 200
 max_episode = 1000
 
 train_loop(n_episode, 
