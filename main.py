@@ -51,25 +51,25 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
 
             # a transition is [[history],int,int,[history_],int]
             agent.store_transition(h, a, r, h_, d)
-            print("%d - %d - %d - %s - %s - %d - %s - %d - %d - %f" % 
-                (episode, 
-                 tot_step_counter, 
-                 episode_step_counter, 
-                 str(h), 
-                 id_to_action[a], 
-                 r, 
-                 str(h_), 
-                 d, 
-                 episode_reward,
-                 max_Q))
+            # print("%d - %d - %d - %s - %s - %d - %s - %d - %d - %f" % 
+            #     (episode, 
+            #      tot_step_counter, 
+            #      episode_step_counter, 
+            #      str(h), 
+            #      id_to_action[a], 
+            #      r, 
+            #      str(h_), 
+            #      d, 
+            #      episode_reward,
+            #      max_Q))
 
             if (tot_step_counter > 5000) and (tot_step_counter % offset_train == 0):
                 cost = agent.train(statelbl_to_img, id_to_orie)
-                print('********* TRAIN ********')
+                #print('********* TRAIN ********')
 
             if (tot_step_counter > 5000) and (tot_step_counter % offset_copy == 0):
                 agent.copy_vars()
-                print('********* COPY *********')
+                #print('********* COPY *********')
 
             h = list(h_)
 
@@ -83,9 +83,15 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
             
    
             if d or episode_step_counter == max_episode:
+                print("episode: %d - goal: %d (%d) - e: %.4f (%d) - Q: %.1f - loss: %.1f - reward: %.1f" % 
+                    (episode+1, d, episode_step_counter,
+                        episode_epsilon/episode_step_counter, tot_step_counter, 
+                        episode_max_Q/episode_step_counter, 
+                        episode_cost/episode_step_counter, 
+                        episode_reward))
                 histories['max_Q'].append(episode_max_Q/episode_step_counter)
                 histories['cost'].append(episode_cost/episode_step_counter)
-                histories['episode_reward'].append(episode_reward/episode_step_counter)
+                histories['episode_reward'].append(episode_reward)
                 histories['epsilon'].append(episode_epsilon/episode_step_counter)
                 break
             
@@ -99,7 +105,7 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
 
 env = Grid()
 
-n_history = 1
+n_history = 4
 history = deque([], maxlen=n_history)
 
 agent = DQN(env.n_actions,
@@ -107,15 +113,15 @@ agent = DQN(env.n_actions,
             learning_rate=0.00025, #0.1
             gamma=0.99,
             epsilon=1.0,
-            memory_size=500000,
-            batch_size=32,
+            memory_size=10000,
+            batch_size=64,
             hidden_units=256)
     
 
-n_episode = 5000
-offset_train = 15
+n_episode = 2000
+offset_train = 5
 offset_copy = 250
-max_episode = 300
+max_episode = 1000
 
 train_loop(n_episode, 
     offset_train, 

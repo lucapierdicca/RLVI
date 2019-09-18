@@ -22,7 +22,7 @@ class Grid:
             img = Image.open(renders_path+filename)
             img = img.convert('L')
             img = img.resize((84,84), Image.ANTIALIAS)
-            img = np.array(img).reshape((84,84,1))
+            img = np.array(img).reshape((84,84,1))/255
             self.statelbl_to_img[filename[:3]] = img
         print(self.statelbl_to_img.keys())
 
@@ -70,11 +70,11 @@ class Grid:
         
         # reward 
         if self.state == self.goal_state:
-            reward = 10
-            done = 1
+            reward = 10.0
+            done = 1.0
         else:
-            reward = -1
-            done = 0
+            reward = -0.01
+            done = 0.0
 
         return list(self.state), reward, done
 

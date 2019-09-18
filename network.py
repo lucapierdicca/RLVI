@@ -48,8 +48,8 @@ class DQN:
 
     def create_NNs(self):
         # ------------------ Placeholders ------------------------
-        self.h = tf.placeholder(tf.float32, [None, 84, 84, 1*self.n_history], name='h')/255 
-        self.h_ = tf.placeholder(tf.float32, [None, 84, 84, 1*self.n_history], name='h_')/255 
+        self.h = tf.placeholder(tf.float32, [None, 84, 84, 1*self.n_history], name='h')
+        self.h_ = tf.placeholder(tf.float32, [None, 84, 84, 1*self.n_history], name='h_')
         self.r = tf.placeholder(tf.float32, [None, ], name='r')  
         self.a = tf.placeholder(tf.int32, [None, ], name='a')  
         self.d = tf.placeholder(tf.float32, [None, ], name='d')  
@@ -162,7 +162,7 @@ class DQN:
 
     def get_action(self, h, statelbl_to_img, id_to_orie):
 
-        print("--------------->%f" % self.epsilon)
+        #print("--------------->%f" % self.epsilon)
 
 
         # dalla history of state lbl a history of state img = stacked input images
@@ -240,7 +240,7 @@ class DQN:
 
 
         # annealing epsilon
-        self.epsilon = ((-0.9/90000.0)*self.learn_step_counter) + 1.0
+        self.epsilon = max(((-0.9/399000.0)*self.learn_step_counter) + 1.0, 0.1)
         self.learn_step_counter+=1
 
         return cost
