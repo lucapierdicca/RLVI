@@ -83,7 +83,7 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
             
    
             if d or episode_step_counter == max_episode:
-                print("episode: %d - goal: %d (%d) - e: %.4f (%d) - Q: %.1f - loss: %.1f - reward: %.1f" % 
+                print("episode: %d - goal: %d (%d) - e: %.4f (%d) - Q: %.2f - loss: %.3f - reward: %.1f" % 
                     (episode+1, d, episode_step_counter,
                         episode_epsilon/episode_step_counter, tot_step_counter, 
                         episode_max_Q/episode_step_counter, 
