@@ -69,9 +69,9 @@ class Grid:
 
         
         # reward
-        reward = min(10, 1/np.power(np.power(self.state[0]-self.goal_state[0],2)+np.power(self.state[1]-self.goal_state[1],2),0.5))
+        distance = np.power(np.power(self.state[0]-self.goal_state[0],2)+np.power(self.state[1]-self.goal_state[1],2),0.5)
+        reward = np.exp(-10*distance)
 
-        
         if self.state == self.goal_state:
             #reward = 10.0
             done = 1.0
