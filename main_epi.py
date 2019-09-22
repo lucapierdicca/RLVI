@@ -22,6 +22,7 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
     tot_step_counter=0
     cost=0.0
     epsilon_counter = 0
+    init_train=True
 
     histories = {'episode_reward':[],
                  'max_Q':[],
@@ -89,17 +90,19 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
                     (episode+1, d, episode_step_counter,
                         episode_epsilon/episode_step_counter, tot_step_counter, 
                         episode_max_Q/episode_step_counter, 
-                        episode_cost/5.0, 
+                        episode_cost/10.0, 
                         episode_reward/episode_step_counter))
                 histories['max_Q'].append(episode_max_Q/episode_step_counter)
-                histories['cost'].append(episode_cost/5.0)
+                histories['cost'].append(episode_cost/10.0)
                 histories['episode_reward'].append(episode_reward)
                 histories['epsilon'].append(episode_epsilon/episode_step_counter)
                 histories['episode_len'].append(episode_step_counter)
                 break
         
         if tot_step_counter > 10000:
-            delta = n_episode-100
+            if init_train: 
+                delta = n_episode-(400+episode)
+                init_train=False
             agent.epsilon = max(((-0.9/delta)*epsilon_counter) + 1.0, 0.1)   
             epsilon_counter+=1
             
