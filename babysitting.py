@@ -4,7 +4,9 @@ import sys
 import os
 
 
-histories = pickle.load(open("histories.pickle","rb"), encoding='latin1')
+
+
+histories = pickle.load(open(sys.argv[1],"rb"), encoding='latin1')
 
 print(histories)
 

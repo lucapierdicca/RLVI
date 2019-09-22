@@ -46,6 +46,8 @@ class Grid:
 
     def step(self, action):
 
+        d_curr = np.power(np.power(self.state[0]-self.goal_state[0],2)+np.power(self.state[1]-self.goal_state[1],2),0.5)
+
         # state
         if action == 0:   # forward
             # E
@@ -69,15 +71,13 @@ class Grid:
 
         
         # reward
-        distance = np.power(np.power(self.state[0]-self.goal_state[0],2)+np.power(self.state[1]-self.goal_state[1],2),0.5)
-        reward = np.exp(-10*distance)
-        
+        d_next = np.power(np.power(self.state[0]-self.goal_state[0],2)+np.power(self.state[1]-self.goal_state[1],2),0.5)
 
         if self.state == self.goal_state:
-            #reward = 10.0
+            reward = 10.0
             done = 1.0
         else:
-            #reward = -0.01
+            reward = d_curr-d_next
             done = 0.0
 
          
