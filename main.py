@@ -53,16 +53,16 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
 
             # a transition is [[history],int,int,[history_],int]
             agent.store_transition(h, a, r, h_, d)
-            print("%d - %d - %d - %s - %s - %f - %s - %f - %f" % 
-                (episode, 
-                 tot_step_counter, 
-                 episode_step_counter, 
-                 str(h), 
-                 id_to_action[a], 
-                 max_Q, 
-                 str(h_), 
-                 d, 
-                 r))
+            # print("%d - %d - %d - %s - %s - %f - %s - %f - %f" % 
+            #     (episode, 
+            #      tot_step_counter, 
+            #      episode_step_counter, 
+            #      str(h), 
+            #      id_to_action[a], 
+            #      max_Q, 
+            #      str(h_), 
+            #      d, 
+            #      r))
 
             if (tot_step_counter > 10000) and (tot_step_counter % offset_train == 0):
                 cost = agent.train(statelbl_to_img, id_to_orie)
