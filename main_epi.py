@@ -103,7 +103,7 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
             if init_train: 
                 delta = n_episode-(400+episode)
                 init_train=False
-            agent.epsilon = max(((-0.9/delta)*epsilon_counter) + 1.0, 0.1)   
+            agent.epsilon = 0.95#max(((-0.9/delta)*epsilon_counter) + 1.0, 0.1)   
             epsilon_counter+=1
             
     pickle.dump(histories, open('histories.pickle','wb'))
