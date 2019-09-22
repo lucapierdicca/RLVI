@@ -77,7 +77,7 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
                 episode_cost=0.0
                 if (tot_step_counter > 10000) and (n_episode % offset_train == 0):
                     
-                    for i in range(5):
+                    for i in range(10):
                         cost = agent.train(statelbl_to_img, id_to_orie)
                         episode_cost+=cost
 
@@ -125,7 +125,7 @@ agent = DQN(env.n_actions,
             hidden_units=256)
     
 
-n_episode = 2000
+n_episode = 4000
 offset_train = 1
 offset_copy = 3
 max_episode = 1000
