@@ -144,7 +144,7 @@ class DQN:
             # ---------------- Training ---------------------
             # reduce_max ritorna il massimo (wrt a) di q_tgt
             target = self.r + (self.gamma*tf.reduce_max(self.q_tgt, axis=1)*(1-self.d))
-    
+            target = tf.stop_gradient(target)
             a_indices = tf.stack([tf.range(tf.shape(self.a)[0], dtype=tf.int32), self.a], axis=1)
             # in questo modo ottengo il valore di q dato lo stato e una specifica azione
             q_wrt_a = tf.gather_nd(params=self.q, indices=a_indices)    # shape=(None, )
