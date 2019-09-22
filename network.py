@@ -240,7 +240,7 @@ class DQN:
 
 
         # annealing epsilon
-        self.epsilon = max(((-0.9/400000.0)*self.learn_step_counter) + 1.0, 0.1)
+        self.epsilon = max(((-0.9/300000.0)*self.learn_step_counter) + 1.0, 0.1)
         self.learn_step_counter+=1
 
         return cost
