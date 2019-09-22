@@ -119,14 +119,14 @@ agent = DQN(env.n_actions,
             learning_rate=0.00025, #0.1
             gamma=0.99,
             epsilon=1.0,
-            memory_size=500000,
+            memory_size=50000,
             batch_size=32,
             hidden_units=256)
     
 
 n_episode = 2000
-offset_train = 50
-offset_copy = 200
+offset_train = 150
+offset_copy = 300
 max_episode = 1000
 
 train_loop(n_episode, 
