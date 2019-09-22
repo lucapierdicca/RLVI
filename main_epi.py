@@ -76,13 +76,13 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
    
             if d or episode_step_counter == max_episode:
                 episode_cost=0.0
-                if (tot_step_counter > 10000) and (n_episode % offset_train == 0):
+                if (tot_step_counter > 30000) and (n_episode % offset_train == 0):
                     
                     for i in range(10):
                         cost = agent.train(statelbl_to_img, id_to_orie)
                         episode_cost+=cost
 
-                if (tot_step_counter > 10000) and (n_episode % offset_copy == 0):
+                if (tot_step_counter > 30000) and (n_episode % offset_copy == 0):
                     agent.copy_vars()
 
 
@@ -99,11 +99,11 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
                 histories['episode_len'].append(episode_step_counter)
                 break
         
-        if tot_step_counter > 10000:
+        if tot_step_counter > 30000:
             if init_train: 
                 delta = n_episode-(400+episode)
                 init_train=False
-            agent.epsilon = 0.95#max(((-0.9/delta)*epsilon_counter) + 1.0, 0.1)   
+            agent.epsilon = max(((-0.9/delta*1.3)*epsilon_counter) + 1.0, 0.1)   
             epsilon_counter+=1
             
     pickle.dump(histories, open('histories.pickle','wb'))
@@ -130,7 +130,7 @@ agent = DQN(env.n_actions,
 
 n_episode = 4000
 offset_train = 1
-offset_copy = 3
+offset_copy = 10
 max_episode = 1000
 
 train_loop(n_episode, 
