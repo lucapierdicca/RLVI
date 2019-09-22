@@ -79,7 +79,7 @@ class Grid:
             reward = 10.0
             done = 1.0
         else:
-            reward = -1.0#d_curr-d_next
+            reward = 5*(d_curr-d_next)
             done = 0.0
 
         return list(self.state), reward, done
