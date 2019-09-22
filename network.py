@@ -48,8 +48,8 @@ class DQN:
 
     def create_NNs(self):
         # ------------------ Placeholders ------------------------
-        self.h = tf.placeholder(tf.float32, [None, 84, 84, 3*self.n_history], name='h')
-        self.h_ = tf.placeholder(tf.float32, [None, 84, 84, 3*self.n_history], name='h_')
+        self.h = tf.placeholder(tf.float32, [None, 84, 84, 1*self.n_history], name='h')
+        self.h_ = tf.placeholder(tf.float32, [None, 84, 84, 1*self.n_history], name='h_')
         self.r = tf.placeholder(tf.float32, [None, ], name='r')  
         self.a = tf.placeholder(tf.int32, [None, ], name='a')  
         self.d = tf.placeholder(tf.float32, [None, ], name='d')  

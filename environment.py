@@ -20,10 +20,10 @@ class Grid:
         self.statelbl_to_img = {}
         for filename in os.listdir(renders_path):
             img = Image.open(renders_path+filename)
-            #img = img.convert('L')
+            img = img.convert('L')
             img = img.resize((84,84), Image.ANTIALIAS)
-            #img = np.array(img).reshape((84,84,1))/255
-            img = np.array(img)/255
+            img = np.array(img).reshape((84,84,1))/255
+            #img = np.array(img)/255
             print(img.shape)
             self.statelbl_to_img[filename[:3]] = img
         #print(self.statelbl_to_img.keys())
@@ -79,7 +79,7 @@ class Grid:
             reward = 10.0
             done = 1.0
         else:
-            reward = d_curr-d_next
+            reward = -1.0#d_curr-d_next
             done = 0.0
 
         return list(self.state), reward, done
