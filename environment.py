@@ -20,13 +20,15 @@ class Grid:
         self.statelbl_to_img = {}
         for filename in os.listdir(renders_path):
             img = Image.open(renders_path+filename)
-            img = img.convert('L')
+            #img = img.convert('L')
             img = img.resize((84,84), Image.ANTIALIAS)
-            img = np.array(img).reshape((84,84,1))/255
+            #img = np.array(img).reshape((84,84,1))/255
+            img = np.array(img)/255
+            print(img.shape)
             self.statelbl_to_img[filename[:3]] = img
-        print(self.statelbl_to_img.keys())
+        #print(self.statelbl_to_img.keys())
 
-        # state = [row,col,orie_id]
+        # state = [col (x),row (y),orie_id]
         # state_img = [height,width,depth] (shape)
         self.init_state = [0,0,0]
         self.goal_state = [1,3,1]
@@ -51,13 +53,13 @@ class Grid:
         # state
         if action == 0:   # forward
             # E
-            if self.state[2] == 0 and self.state[1] != self.grid_shape[1]-1: self.state[1]+=1
+            if self.state[2] == 0 and self.state[0] != self.grid_shape[0]-1: self.state[0]+=1
             # N
-            elif self.state[2] == 1 and self.state[0] != self.grid_shape[0]-1: self.state[0]+=1
+            elif self.state[2] == 1 and self.state[1] != self.grid_shape[1]-1: self.state[1]+=1
             # O
-            elif self.state[2] == 2 and self.state[1] != 0: self.state[1]-=1
+            elif self.state[2] == 2 and self.state[0] != 0: self.state[0]-=1
             # S
-            elif self.state[2] == 3 and self.state[0] != 0: self.state[0]-=1
+            elif self.state[2] == 3 and self.state[1] != 0: self.state[1]-=1
         else:
             if action == 1:   # turn left
                 self.turns+=1
@@ -80,9 +82,8 @@ class Grid:
             reward = d_curr-d_next
             done = 0.0
 
-         
-
         return list(self.state), reward, done
+
 
     def render(self):
         pass

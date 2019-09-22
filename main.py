@@ -26,7 +26,8 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
     histories = {'episode_reward':[],
                  'max_Q':[],
                  'cost':[],
-                 'epsilon':[]}
+                 'epsilon':[],
+                 'episode_len':[]}
 
     for episode in range(n_episode):
 
@@ -52,17 +53,16 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
 
             # a transition is [[history],int,int,[history_],int]
             agent.store_transition(h, a, r, h_, d)
-            # print("%d - %d - %d - %s - %s - %d - %s - %d - %d - %f" % 
-            #     (episode, 
-            #      tot_step_counter, 
-            #      episode_step_counter, 
-            #      str(h), 
-            #      id_to_action[a], 
-            #      r, 
-            #      str(h_), 
-            #      d, 
-            #      episode_reward,
-            #      max_Q))
+            print("%d - %d - %d - %s - %s - %f - %s - %f - %f" % 
+                (episode, 
+                 tot_step_counter, 
+                 episode_step_counter, 
+                 str(h), 
+                 id_to_action[a], 
+                 max_Q, 
+                 str(h_), 
+                 d, 
+                 r))
 
             if (tot_step_counter > 10000) and (tot_step_counter % offset_train == 0):
                 cost = agent.train(statelbl_to_img, id_to_orie)
@@ -94,6 +94,7 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
                 histories['cost'].append(episode_cost/episode_step_counter)
                 histories['episode_reward'].append(episode_reward)
                 histories['epsilon'].append(episode_epsilon/episode_step_counter)
+                histories['episode_len'].append(episode_step_counter)
                 break
         
         if tot_step_counter > 10000:
