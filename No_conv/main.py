@@ -70,14 +70,14 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
             if d or episode_step_counter == max_episode:
                 print("episode: %d - goal: %d (%d) - e: %.4f (%d) - Q: %.5f - loss: %.3f - reward: %.1f" % 
                     (episode+1, d, episode_step_counter,
-                        episode_epsilon, tot_step_counter, 
+                        agent.epsilon, tot_step_counter, 
                         episode_max_Q/episode_step_counter, 
                         episode_cost/episode_step_counter, 
                         episode_reward/episode_step_counter))
                 histories['max_Q'].append(episode_max_Q/episode_step_counter)
                 histories['cost'].append(episode_cost/episode_step_counter)
                 histories['episode_reward'].append(episode_reward)
-                histories['epsilon'].append(episode_epsilon/episode_step_counter)
+                histories['epsilon'].append(agent.epsilon)
                 histories['episode_len'].append(episode_step_counter)
                 break
         
