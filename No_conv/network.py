@@ -133,7 +133,7 @@ class DQN:
                 self.d: batch_d
             })
 
-        if episode % 10 == 0:
+        if episode % 10000 == 0:
             save_path = self.saver.save(self.sess, "./weights/weights.ckpt",
                  global_step=episode, write_meta_graph=False)
 
