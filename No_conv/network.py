@@ -139,6 +139,7 @@ class DQN:
 
         return cost
 
+    @staticmethod
     def eval():
         from pprint import pprint
         sess = tf.Session()
