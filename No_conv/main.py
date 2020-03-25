@@ -13,6 +13,8 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
     tot_step_counter=0
     cost=0.0
     #epsilon_counter = 0
+    action_space = {'u':0, 'd':1, 'l':2, 'r':3}
+    id_to_action = {v:k for k,v in action_space.items()}
 
     histories = {'episode_reward':[],
                  'max_Q':[],
@@ -39,6 +41,7 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
 
             # a transition is [[history],int,int,[history_],int]
             agent.store_transition(s, a, r, s_, d)
+            #print(s,id_to_action[a],r,s_,d)
             # print("%d - %d - %d - %s - %s - %f - %s - %f - %f" % 
             #     (episode, 
             #      tot_step_counter, 
@@ -57,6 +60,8 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
             if (tot_step_counter > 10000) and (tot_step_counter % offset_copy == 0):
                 agent.copy_vars()
                 #print('********* COPY *********')
+
+            s = list(s_)
 
             #episode_epsilon+=agent.epsilon
             episode_max_Q+=max_Q
@@ -95,26 +100,26 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
 
 #--------------------------------------------
 
-# env = Grid()
+env = Grid()
 
 
-# agent = DQN(env.n_actions,
-#             learning_rate=0.000001, #0.1
-#             gamma=0.99,
-#             epsilon=1.0,
-#             memory_size=1000000,
-#             batch_size=64,
-#             hidden_units=128)
+agent = DQN(env.n_actions,
+            learning_rate=0.000001, #0.1
+            gamma=0.99,
+            epsilon=1.0,
+            memory_size=1000000,
+            batch_size=64,
+            hidden_units=128)
     
 
-# n_episode = 250000
-# offset_train = 30
-# offset_copy = 300
-# max_episode = 1000
+n_episode = 50000
+offset_train = 30
+offset_copy = 300
+max_episode = 1000
 
-# train_loop(n_episode, 
-#     offset_train, 
-#     offset_copy,
-#     max_episode)
+train_loop(n_episode, 
+    offset_train, 
+    offset_copy,
+    max_episode)
 
-DQN.eval()
+#DQN.eval()
