@@ -136,6 +136,7 @@ class DQN:
         if episode % 10000 == 0:
             save_path = self.saver.save(self.sess, "./weights/weights.ckpt",
                  global_step=episode, write_meta_graph=False)
+            print('-----------------SAVE_WEIGHTS------------------')
 
         return cost
 
