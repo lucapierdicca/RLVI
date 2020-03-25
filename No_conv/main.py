@@ -81,7 +81,7 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
                         episode_reward/episode_step_counter))
                 histories['max_Q'].append(episode_max_Q/episode_step_counter)
                 histories['cost'].append(episode_cost/episode_step_counter)
-                histories['episode_reward'].append(episode_reward)
+                histories['episode_reward'].append(episode_reward/episode_step_counter)
                 histories['epsilon'].append(agent.epsilon)
                 histories['episode_len'].append(episode_step_counter)
                 break
@@ -100,26 +100,26 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
 
 #--------------------------------------------
 
-env = Grid()
+# env = Grid()
 
 
-agent = DQN(env.n_actions,
-            learning_rate=0.000001, #0.1
-            gamma=0.99,
-            epsilon=1.0,
-            memory_size=1000000,
-            batch_size=64,
-            hidden_units=128)
+# agent = DQN(env.n_actions,
+#             learning_rate=0.000001, #0.1
+#             gamma=0.99,
+#             epsilon=1.0,
+#             memory_size=1000000,
+#             batch_size=64,
+#             hidden_units=128)
     
 
-n_episode = 50000
-offset_train = 30
-offset_copy = 300
-max_episode = 1000
+# n_episode = 50000
+# offset_train = 30
+# offset_copy = 300
+# max_episode = 1000
 
-train_loop(n_episode, 
-    offset_train, 
-    offset_copy,
-    max_episode)
+# train_loop(n_episode, 
+#     offset_train, 
+#     offset_copy,
+#     max_episode)
 
-#DQN.eval()
+DQN.eval()
