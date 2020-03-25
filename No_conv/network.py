@@ -140,6 +140,7 @@ class DQN:
         return cost
 
     def eval():
+        from pprint import pprint
         sess = tf.Session()
         #tf.reset_default_graph()
         saver = tf.train.import_meta_graph('./graph/graph.meta')
@@ -151,9 +152,21 @@ class DQN:
         s = graph.get_tensor_by_name('s:0')
         q = graph.get_tensor_by_name('Q/q/BiasAdd:0')
 
-        a = sess.run(q, {s:[[0,0]]})
+        states = []
+        for i in range(7):
+            for j in range(7):
+                states.append([i,j])
 
-        print(a)
+        print(len(states))
+
+        a = sess.run(q, {s:states})
+
+        Q,r = {},0
+        for i in range(7):
+            for j in range(7):
+                Q[str(i)+str(j)] = a[6*i+j]
+
+        pprint(Q)
 
 
 
