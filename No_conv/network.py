@@ -106,39 +106,45 @@ class DQN:
             
         return action, max_Q
 
-    
-    def train(self,episode):
-
+    def sample(self):
         # sample batch of transition from memory
         batch = random.sample(self.memory, self.batch_size)
 
-        batch_s, batch_a, batch_r, batch_s_, batch_d = [],[],[],[],[]
+        batch_s, batch_a, batch_r, batch_s_, batch_d= [],[],[],[],[]
         
         for transition in batch:
-
             batch_s.append(transition[0])
             batch_a.append(transition[1])
             batch_r.append(transition[2])
             batch_s_.append(transition[3])
             batch_d.append(transition[4]) 
-        
 
-        _, cost = self.sess.run(
-            [self.train_op, self.loss],
+        return batch_s, batch_a, batch_r, batch_s_, batch_d
+
+    def get_cost(self, batch):
+        cost = self.sess.run(
+            self.loss,
             feed_dict={
-                self.s: batch_s,
-                self.a: batch_a,
-                self.r: batch_r,
-                self.s_: batch_s_,
-                self.d: batch_d
+                self.s: batch[0],
+                self.a: batch[1],
+                self.r: batch[2],
+                self.s_: batch[3],
+                self.d: batch[4]
+            })
+        return cost
+
+    def train(self, batch):
+
+        _ = self.sess.run(
+            self.train_op,
+            feed_dict={
+                self.s: batch[0],
+                self.a: batch[1],
+                self.r: batch[2],
+                self.s_: batch[3],
+                self.d: batch[4]
             })
 
-        if episode % 10000 == 0:
-            save_path = self.saver.save(self.sess, "./weights/weights.ckpt",
-                 global_step=episode, write_meta_graph=False)
-            print('-----------------SAVE_WEIGHTS------------------')
-
-        return cost
 
     @staticmethod
     def eval():
