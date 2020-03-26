@@ -34,7 +34,7 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
             # a transition is [[history],int,int,[history_],int]
             agent.store_transition(s, a, r, s_, d)
 
-            ########################################à
+            ########################################
 
             s = list(s_)
 
