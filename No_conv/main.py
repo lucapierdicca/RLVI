@@ -42,6 +42,7 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
 
             #episode_max_Q+=max_Q
             episode_reward+=r
+            #print(episode_reward,r)
 
             episode_step_counter+=1
             tot_step_counter += 1

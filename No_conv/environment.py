@@ -53,6 +53,7 @@ class Grid:
             done = 1.0
         else:
             reward = 5*(d_curr-d_next)
+            if reward == 0.0: reward = -1.0
             done = 0.0
 
         return list(self.state), reward, done
