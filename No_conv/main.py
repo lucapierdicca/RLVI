@@ -13,6 +13,7 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
     tot_step_counter=0
 
     histories = {'episode_reward':[],
+                 'argmax_Q':[],
                  'max_Q':[],
                  'epsilon':[],
                  'episode_len':[]}
@@ -21,13 +22,14 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
 
         episode_step_counter=0.0 
         episode_reward=0.0
-        episode_max_Q=0.0
+        #episode_max_Q=0.0
 
         s = env.reset()
+        _, max_Q, argmax_Q = agent.get_action(s)
 
         while True:
             # env.render()
-            a, max_Q = agent.get_action(s)
+            a, _, _ = agent.get_action(s)
 
             s_, r, d = env.step(a)
 
@@ -38,7 +40,7 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
 
             s = list(s_)
 
-            episode_max_Q+=max_Q
+            #episode_max_Q+=max_Q
             episode_reward+=r
 
             episode_step_counter+=1
@@ -48,13 +50,14 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
                 break
 
 
-        print("episode: %d - goal: %d (%d) - e: %.4f (%d) - Q: %.5f - reward: %.1f" % 
+        print("episode: %d - goal: %d (%d) - e: %.4f (%d) - max_Q: %.5f - argmax_Q: %d - reward: %.1f" % 
             (episode+1, d, episode_step_counter,
                 agent.epsilon, tot_step_counter, 
-                episode_max_Q/episode_step_counter,  
-                episode_reward/episode_step_counter))
-        histories['max_Q'].append(episode_max_Q/episode_step_counter)
-        histories['episode_reward'].append(episode_reward/episode_step_counter)
+                max_Q, argmax_Q,  
+                episode_reward))
+        histories['max_Q'].append(max_Q)
+        histories['argmax_Q'].append(argmax_Q)
+        histories['episode_reward'].append(episode_reward)
         histories['epsilon'].append(agent.epsilon)
         histories['episode_len'].append(episode_step_counter)
         
@@ -87,26 +90,26 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
 
 #--------------------------------------------
 
-# env = Grid()
+env = Grid()
 
 
-# agent = DQN(env.n_actions,
-#             learning_rate=0.000001, #0.1
-#             gamma=0.99,
-#             epsilon=1.0,
-#             memory_size=1000000,
-#             batch_size=64,
-#             hidden_units=128)
+agent = DQN(env.n_actions,
+            learning_rate=0.000001, #0.1
+            gamma=0.99,
+            epsilon=1.0,
+            memory_size=1000000,
+            batch_size=64,
+            hidden_units=128)
     
 
-# n_episode = 50000
-# offset_train = 1
-# offset_copy = 300
-# max_episode = 1000
+n_episode = 50000
+offset_train = 1
+offset_copy = 300
+max_episode = 1000
 
-# train_loop(n_episode, 
-#     offset_train, 
-#     offset_copy,
-#     max_episode)
+train_loop(n_episode, 
+    offset_train, 
+    offset_copy,
+    max_episode)
 
-DQN.eval()
+#DQN.eval()

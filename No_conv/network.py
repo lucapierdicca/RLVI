@@ -49,14 +49,15 @@ class DQN:
 
                
         # ------------------ Conv Q ------------------
+        #activation=tf.nn.relu
         with tf.variable_scope('Q'):
-            fc1_e = tf.layers.dense(self.s, self.hidden_units, tf.nn.relu, trainable=True)
+            fc1_e = tf.layers.dense(self.s, self.hidden_units, activation=None, trainable=True)
             self.q = tf.layers.dense(fc1_e, self.n_actions, trainable=True, name='q')
 
 
         # ------------------ Conv Q_tgt ------------------
         with tf.variable_scope('Q_tgt'):
-            fc1_t = tf.layers.dense(self.s_, self.hidden_units, tf.nn.relu, trainable=False)
+            fc1_t = tf.layers.dense(self.s_, self.hidden_units, activation=None, trainable=False)
             self.q_tgt = tf.layers.dense(fc1_t, self.n_actions, trainable=False)
 
 
@@ -95,6 +96,7 @@ class DQN:
         # get Q value for every action (array)
         actions_value = self.sess.run(self.q, feed_dict={self.s: [s]})
         max_Q = np.max(actions_value)
+        argmax_Q = np.argmax(actions_value)
         
         if np.random.uniform() < self.epsilon:
             # choose a random action
@@ -104,7 +106,7 @@ class DQN:
             argmax_Q = np.argmax(actions_value)
             action = argmax_Q
             
-        return action, max_Q
+        return action, max_Q, argmax_Q
 
     def sample(self):
         # sample batch of transition from memory
