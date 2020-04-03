@@ -32,7 +32,7 @@ class DQN:
         self.memory = deque([], maxlen=memory_size)
 
         self.create_NNs()
-        self.saver = tf.train.Saver()
+        #self.saver = tf.train.Saver()
         self.sess = tf.Session()
         self.sess.run(tf.global_variables_initializer())
         self.copy_vars()
@@ -146,9 +146,9 @@ class DQN:
         self.train_op = tf.train.RMSPropOptimizer(self.learning_rate).minimize(self.loss)
 
         # export only Q graph (not Q_tgt)
-        tf.train.export_meta_graph(filename='./graph/graph.meta')
+        #tf.train.export_meta_graph(filename='./graph/graph.meta')
 
-        
+
     def copy_vars(self):
         self.sess.run(self.copy_vars_op)
 

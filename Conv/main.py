@@ -14,7 +14,7 @@ def reset_history():
 
 def train_loop(n_episode, offset_train, offset_copy, max_episode):
 
-    global env
+    global env, history
     statelbl_to_img, id_to_orie = env.get_renders()
     action_space = {'f':0, 'tl':1, 'tr':2}
     id_to_action = {v:k for k,v in action_space.items()}
@@ -51,6 +51,7 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
 
             # a transition is [[history],int,int,[history_],int]
             agent.store_transition(h, a, r, h_, d)
+            #print(h,a,h_)
 
             ##########################################
 
@@ -88,10 +89,10 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
             agent.copy_vars()
 
 
-        if episode % 10000 == 0:
-            print('********** SAVE *********')
-            agent.saver.save(agent.sess, "./weights/weights.ckpt",
-                 global_step=episode, write_meta_graph=False)
+        # if episode % 10000 == 0:
+        #     print('********** SAVE *********')
+        #     agent.saver.save(agent.sess, "./weights/weights.ckpt",
+        #          global_step=episode, write_meta_graph=False)
             
 
         #epsilon annealing
@@ -111,7 +112,7 @@ history = deque([], maxlen=n_history)
 
 agent = DQN(env.n_actions,
             n_history,
-            learning_rate=0.000001, #0.1
+            learning_rate=0.00001, #0.1
             gamma=0.99,
             epsilon=1.0,
             memory_size=1000000,
