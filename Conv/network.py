@@ -145,7 +145,10 @@ class DQN:
         
         self.train_op = tf.train.RMSPropOptimizer(self.learning_rate).minimize(self.loss)
 
+        # export only Q graph (not Q_tgt)
+        tf.train.export_meta_graph(filename='./graph/graph.meta')
 
+        
     def copy_vars(self):
         self.sess.run(self.copy_vars_op)
 

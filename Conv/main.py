@@ -79,17 +79,20 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
         histories['episode_len'].append(episode_step_counter)
         
         if (tot_step_counter > 10000) and (episode % offset_train == 0):
-            cost = agent.train(statelbl_to_img, id_to_orie)
             print('********* TRAIN ********')
+            cost = agent.train(statelbl_to_img, id_to_orie)
+
 
         if (tot_step_counter > 10000) and (episode % offset_copy == 0):
-            agent.copy_vars()
             print('********* COPY *********')
+            agent.copy_vars()
+
 
         if episode % 10000 == 0:
+            print('********** SAVE *********')
             agent.saver.save(agent.sess, "./weights/weights.ckpt",
                  global_step=episode, write_meta_graph=False)
-            print('********** SAVE *********')
+            
 
         #epsilon annealing
         if tot_step_counter > 20000:
@@ -116,8 +119,8 @@ agent = DQN(env.n_actions,
             hidden_units=128)
     
 
-n_episode = 50000
-offset_train = 1
+n_episode = 10000
+offset_train = 15
 offset_copy = 300
 max_episode = 1000
 
