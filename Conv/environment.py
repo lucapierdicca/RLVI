@@ -21,10 +21,10 @@ class Grid:
         for filename in os.listdir(renders_path):
             img = Image.open(renders_path+filename)
             img = img.convert('L')
-            img = img.resize((84,84), Image.ANTIALIAS)
-            img = np.array(img).reshape((84,84,1))
+            img = img.resize((40,40), Image.ANTIALIAS)
+            img = np.array(img).reshape((40,40,1))
             #img = np.array(img)/255
-            print(img.shape)
+            #print(img.shape)
             self.statelbl_to_img[filename[:3]] = img
         #print(self.statelbl_to_img.keys())
 
@@ -76,7 +76,7 @@ class Grid:
         d_next = np.power(np.power(self.state[0]-self.goal_state[0],2)+np.power(self.state[1]-self.goal_state[1],2),0.5)
 
         if self.state == self.goal_state:
-            reward = 10.0
+            reward = 50.0
             done = 1.0
         else:
             reward = 5*(d_curr-d_next)

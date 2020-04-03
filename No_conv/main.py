@@ -28,12 +28,11 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
         _, max_Q, argmax_Q = agent.get_action(s)
 
         while True:
-            # env.render()
+
             a, _, _ = agent.get_action(s)
 
             s_, r, d = env.step(a)
 
-            # a transition is [[history],int,int,[history_],int]
             agent.store_transition(s, a, r, s_, d)
 
             ########################################
@@ -42,7 +41,6 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
 
             #episode_max_Q+=max_Q
             episode_reward+=r
-            #print(episode_reward,r)
 
             episode_step_counter+=1
             tot_step_counter += 1

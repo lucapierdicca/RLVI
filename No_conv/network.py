@@ -29,7 +29,7 @@ class DQN:
         self.memory = deque([], maxlen=memory_size)
 
         self.create_NNs()
-        self.saver = tf.train.Saver() #var_list=tf.get_default_graph().get_collection('trainable_variables')
+        self.saver = tf.train.Saver() 
         self.sess = tf.Session()
         self.sess.run(tf.global_variables_initializer())
         self.copy_vars()
@@ -49,7 +49,6 @@ class DQN:
 
                
         # ------------------ Conv Q ------------------
-        #activation=tf.nn.relu
         with tf.variable_scope('Q'):
             fc1_e = tf.layers.dense(self.s, self.hidden_units, activation=None, trainable=True)
             self.q = tf.layers.dense(fc1_e, self.n_actions, trainable=True, name='q')
@@ -185,8 +184,6 @@ class DQN:
                 policy[6-s[1]][s[0]] = 'G'
 
         pprint(policy)
-
-
 
 
 
