@@ -172,7 +172,7 @@ class DQN:
 
         # get Q value for every action
         actions_value = self.sess.run(self.q, feed_dict={self.h: history_img})
-        max_Q = actions_value[0] #f
+        max_Q = actions_value[0][0] #f
         argmax_Q = np.argmax(actions_value)
         
         if np.random.uniform() < self.epsilon:
