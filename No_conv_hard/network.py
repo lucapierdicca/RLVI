@@ -162,24 +162,19 @@ class DQN:
         states = []
         for i in range(7):
             for j in range(7):
-                states.append([i,j])
+                for k in range(3):
+                    states.append([i,j,k])
 
         a = sess.run(q, {s:states})
 
-        # Q,r = {},0
-        # for i in range(7):
-        #     for j in range(7):
-        #         Q[str(i)+str(j)] = a[6*i+j]
 
-        id_to_sym = {0:'A',1:'V',2:'<',3:'>'}
-        policy = [['0']*7 for i in range(7)]
-
+        id_to_sym = {0:'f',1:'tl',2:'tr'}
+        
+        policy = {}
         for s,a_value in zip(states,a):
             print(s,a_value)
             amax = np.argmax(a_value)
-            policy[6-s[1]][s[0]] = id_to_sym[amax]
-            if s[0] == 1 and s[1] == 3:
-                policy[6-s[1]][s[0]] = 'G'
+            policy[tuple(s)] = id_to_sym[amax]
 
         pprint(policy)
 
