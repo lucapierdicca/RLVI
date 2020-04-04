@@ -162,7 +162,7 @@ class DQN:
         states = []
         for i in range(7):
             for j in range(7):
-                for k in range(3):
+                for k in range(4):
                     states.append([i,j,k])
 
         a = sess.run(q, {s:states})
