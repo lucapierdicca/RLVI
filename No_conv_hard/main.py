@@ -71,9 +71,10 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
             print('********* COPY *********')
 
         if episode % 10000 == 0:
+            print('********** SAVE *********')
             agent.saver.save(agent.sess, "./weights/weights.ckpt",
                  global_step=episode, write_meta_graph=False)
-            print('********** SAVE *********')
+            
 
         #epsilon annealing
         if tot_step_counter > 20000:

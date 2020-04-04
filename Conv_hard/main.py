@@ -81,7 +81,7 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
         
         if (tot_step_counter > 10000) and (episode % offset_train == 0):
             print('********* TRAIN ********')
-            cost = agent.train(statelbl_to_img, id_to_orie)
+            agent.train(statelbl_to_img, id_to_orie)
 
 
         if (tot_step_counter > 10000) and (episode % offset_copy == 0):
@@ -89,10 +89,10 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
             agent.copy_vars()
 
 
-        # if episode % 10000 == 0:
-        #     print('********** SAVE *********')
-        #     agent.saver.save(agent.sess, "./weights/weights.ckpt",
-        #          global_step=episode, write_meta_graph=False)
+        if episode % 10000 == 0:
+            print('********** SAVE *********')
+            agent.saver.save(agent.sess, "./weights/weights.ckpt",
+                 global_step=episode, write_meta_graph=False)
             
 
         #epsilon annealing
