@@ -1,7 +1,7 @@
 import numpy as np
 import os
 from PIL import Image
-
+import statistics
 
 
 class Grid:
@@ -17,15 +17,18 @@ class Grid:
         self.id_to_orie = {v:k for k,v in self.orie_to_id.items()}
 
         renders_path = './env_renders/'
+        img_size = 40
         self.statelbl_to_img = {}
         for filename in os.listdir(renders_path):
             img = Image.open(renders_path+filename)
             img = img.convert('L')
-            img = img.resize((40,40), Image.ANTIALIAS)
-            img = np.array(img).reshape((40,40,1))
-            #img = np.array(img)/255
-            #print(img.shape)
-            self.statelbl_to_img[filename[:3]] = img
+            img = img.resize((img_size,img_size), Image.ANTIALIAS)
+            img = np.array(img).reshape((img_size,img_size,1))
+
+            cyan = 0
+            if len(filename) > 7: cyan = 1
+            
+            self.statelbl_to_img[filename[:3]] = [img,cyan]
         #print(self.statelbl_to_img.keys())
 
         # state = [col (x),row (y),orie_id]
@@ -80,6 +83,10 @@ class Grid:
             done = 1.0
         else:
             reward = 5*(d_curr-d_next)
+            if reward == 0:
+                cyan = self.statelbl_to_img[str(self.state[0])+str(self.state[1])+self.id_to_orie[self.state[2]]][1]
+                if cyan: reward = +10
+                else reward = -10
             done = 0.0
 
         return list(self.state), reward, done
@@ -87,5 +94,7 @@ class Grid:
 
     def render(self):
         pass
+
+
 
 

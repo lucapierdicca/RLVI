@@ -161,7 +161,7 @@ class DQN:
         # dalla history of state lbl a history of state img = stacked input images
         history_img = [] 
         for state in h:
-            history_img.append(statelbl_to_img[str(state[0])+str(state[1])+id_to_orie[state[2]]])
+            history_img.append(statelbl_to_img[str(state[0])+str(state[1])+id_to_orie[state[2]]][0])
         
         if len(history_img) > 1:
             history_img = [np.dstack(tuple(history_img))]
@@ -197,7 +197,7 @@ class DQN:
             
             history_img = []
             for state in transition[0]:
-                history_img.append(statelbl_to_img[str(state[0])+str(state[1])+id_to_orie[state[2]]])
+                history_img.append(statelbl_to_img[str(state[0])+str(state[1])+id_to_orie[state[2]]][0])
                 
             if len(history_img) == 1:
                 history_img = history_img[0]
@@ -211,7 +211,7 @@ class DQN:
             
             history_img = []
             for state in transition[3]:
-                history_img.append(statelbl_to_img[str(state[0])+str(state[1])+id_to_orie[state[2]]])
+                history_img.append(statelbl_to_img[str(state[0])+str(state[1])+id_to_orie[state[2]]][0])
 
             if len(history_img) == 1:
                 history_img = history_img[0]
