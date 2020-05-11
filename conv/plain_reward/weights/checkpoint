@@ -1,0 +1,6 @@
+model_checkpoint_path: "weights.ckpt-40000"
+all_model_checkpoint_paths: "weights.ckpt-0"
+all_model_checkpoint_paths: "weights.ckpt-10000"
+all_model_checkpoint_paths: "weights.ckpt-20000"
+all_model_checkpoint_paths: "weights.ckpt-30000"
+all_model_checkpoint_paths: "weights.ckpt-40000"
