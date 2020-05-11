@@ -3,7 +3,7 @@ import tensorflow.compat.v1 as tf
 import tensorflow.contrib as contrib
 from collections import deque
 import random
-
+from pprint import pprint
 
 # Deep Q Network
 class DQN:
@@ -60,18 +60,18 @@ class DQN:
             self.q_tgt = tf.layers.dense(fc1_t, self.n_actions, trainable=False)
 
 
-        # --------------- Copying -------------------
+        # --------------- Copy op -------------------
         self.copy_vars_op = [tf.assign(tgt, nor) for tgt, nor in zip(tf.trainable_variables('Q_tgt'), 
             tf.trainable_variables('Q'))]
 
 
-        # ---------------- Training ---------------------
+        # ---------------- Training ops---------------------
         # reduce_max ritorna il massimo (wrt a) di q_tgt
         target = self.r + (self.gamma*tf.reduce_max(self.q_tgt, axis=1)*(1-self.d))
-        #target = tf.stop_gradient(target)
+        
         a_indices = tf.stack([tf.range(tf.shape(self.a)[0], dtype=tf.int32), self.a], axis=1)
         # in questo modo ottengo il valore di q dato lo stato e una specifica azione
-        q_wrt_a = tf.gather_nd(params=self.q, indices=a_indices)    # shape=(None, )
+        q_wrt_a = tf.gather_nd(params=self.q, indices=a_indices) 
         # la media delle squared differenceS (una per ogni elemento del batch che gli dai in input)
         self.loss = tf.reduce_mean(tf.squared_difference(target, q_wrt_a))
         
@@ -94,7 +94,7 @@ class DQN:
 
         # get Q value for every action (array)
         actions_value = self.sess.run(self.q, feed_dict={self.s: [s]})
-        max_Q = np.max(actions_value)
+        max_Q = actions_value[0][0]
         argmax_Q = np.argmax(actions_value)
         
         if np.random.uniform() < self.epsilon:
@@ -122,20 +122,8 @@ class DQN:
 
         return batch_s, batch_a, batch_r, batch_s_, batch_d
 
-    def get_cost(self, batch):
-        cost = self.sess.run(
-            self.loss,
-            feed_dict={
-                self.s: batch[0],
-                self.a: batch[1],
-                self.r: batch[2],
-                self.s_: batch[3],
-                self.d: batch[4]
-            })
-        return cost
 
     def train(self, batch):
-
         _ = self.sess.run(
             self.train_op,
             feed_dict={
@@ -148,45 +136,18 @@ class DQN:
 
 
     @staticmethod
-    def eval():
-        from pprint import pprint
+    def restore():
+        # restore the last weights and the graph
         sess = tf.Session()
-        #tf.reset_default_graph()
         saver = tf.train.import_meta_graph('./graph/graph.meta')
+        
         saver.restore(sess, tf.train.latest_checkpoint("./weights/"))
-
-
 
         graph = tf.get_default_graph()
         s = graph.get_tensor_by_name('s:0')
         q = graph.get_tensor_by_name('Q/q/BiasAdd:0')
 
-        states = []
-        for i in range(7):
-            for j in range(7):
-                states.append([i,j])
-
-        a = sess.run(q, {s:states})
-
-        # Q,r = {},0
-        # for i in range(7):
-        #     for j in range(7):
-        #         Q[str(i)+str(j)] = a[6*i+j]
-
-        id_to_sym = {0:'A',1:'V',2:'<',3:'>'}
-        policy = [['0']*7 for i in range(7)]
-
-        for s,a_value in zip(states,a):
-            print(s,a_value)
-            amax = np.argmax(a_value)
-            policy[6-s[1]][s[0]] = id_to_sym[amax]
-            if s[0] == 1 and s[1] == 3:
-                policy[6-s[1]][s[0]] = 'G'
-
-        pprint(policy)
-
-
-
+        return sess, q, s
 
 
 if __name__ == '__main__':

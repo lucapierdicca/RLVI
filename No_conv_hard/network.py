@@ -148,35 +148,18 @@ class DQN:
 
 
     @staticmethod
-    def eval():
-        from pprint import pprint
+    def restore():
+        # restore the last weights and the graph
         sess = tf.Session()
-        #tf.reset_default_graph()
         saver = tf.train.import_meta_graph('./graph/graph.meta')
+        
         saver.restore(sess, tf.train.latest_checkpoint("./weights/"))
 
         graph = tf.get_default_graph()
         s = graph.get_tensor_by_name('s:0')
         q = graph.get_tensor_by_name('Q/q/BiasAdd:0')
 
-        states = []
-        for i in range(7):
-            for j in range(7):
-                for k in range(4):
-                    states.append([i,j,k])
-
-        a = sess.run(q, {s:states})
-
-
-        id_to_sym = {0:'f',1:'tl',2:'tr'}
-        
-        policy = {}
-        for s,a_value in zip(states,a):
-            print(s,a_value)
-            amax = np.argmax(a_value)
-            policy[tuple(s)] = id_to_sym[amax]
-
-        pprint(policy)
+        return sess, q, s
 
 
 

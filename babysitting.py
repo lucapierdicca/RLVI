@@ -26,7 +26,7 @@ for index,(f_name,values) in enumerate(histories_mod.items()):
 	plt.subplot(len(histories_mod),1,index+1)	
 	plt.plot(values)
 	plt.ylabel(f_name)
-	plt.xlim(0,50000)
+	#plt.xlim(0,50000)
 	#plt.xlabel('Training steps')
 
 plt.show()

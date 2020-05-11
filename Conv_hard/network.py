@@ -236,17 +236,18 @@ class DQN:
 
 
     @staticmethod
-    def eval():
-        from pprint import pprint
+    def restore():
+        # restore the last weights and the graph
         sess = tf.Session()
-        #tf.reset_default_graph()
-        saver = tf.train.import_meta_graph('./graph/graph.meta')
-        saver.restore(sess, tf.train.latest_checkpoint("./weights/"))
-
+        saver = tf.train.import_meta_graph('./stop_reward/graph/graph.meta')
+        
+        saver.restore(sess, tf.train.latest_checkpoint("./stop_reward/weights"))
 
         graph = tf.get_default_graph()
         h = graph.get_tensor_by_name('h:0')
         q = graph.get_tensor_by_name('Q/q/BiasAdd:0')
+
+        return sess, q, h
 
 
 
@@ -254,3 +255,5 @@ class DQN:
 
 if __name__ == '__main__':
     pass
+
+
