@@ -94,7 +94,7 @@ class DQN:
 
         # get Q value for every action (array)
         actions_value = self.sess.run(self.q, feed_dict={self.s: [s]})
-        max_Q = np.max(actions_value)
+        max_Q = actions_value[0][0]
         argmax_Q = np.argmax(actions_value)
         
         if np.random.uniform() < self.epsilon:

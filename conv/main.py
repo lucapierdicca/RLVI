@@ -181,7 +181,7 @@ if TRAIN:
 
     # agent init
     agent = DQN(env.n_actions,
-                learning_rate=0.00001,
+                learning_rate=0.00001,#0.000001
                 gamma=0.99,
                 epsilon=1.0,
                 memory_size=1000000,
