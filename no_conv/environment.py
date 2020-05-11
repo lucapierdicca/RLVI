@@ -12,7 +12,17 @@ class Grid:
         # u:0, tl:1, tr:2
         self.action_space = ['f','tl','tr']
         self.n_actions = len(self.action_space)
+        
+        self.orie_to_id = {'E':0,'N':1,'O':2,'S':3}
+        self.id_to_orie = {v:k for k,v in self.orie_to_id.items()}
 
+        renders_path = './env_renders/'
+        self.statelbl_to_img = {}
+
+        for filename in os.listdir(renders_path):
+            cyan = 0
+            if len(filename) > 7: cyan = 1
+            self.statelbl_to_img[filename[:3]] = cyan
         # state = [col (x),row (y),orie_id]
         self.init_state = [0,0,0]
         self.goal_state = [1,3,1]
@@ -64,6 +74,12 @@ class Grid:
             done = 1.0
         else:
             reward = 5*(d_curr-d_next)
+            #--------
+            if reward == 0:
+                cyan = self.statelbl_to_img[str(self.state[0])+str(self.state[1])+self.id_to_orie[self.state[2]]]
+                if cyan: reward = +10
+                else: reward = -10
+            #-------
             done = 0.0
 
         return list(self.state), reward, done
@@ -73,3 +89,5 @@ class Grid:
         pass
 
 
+env = Grid()
+print(env.statelbl_to_img)

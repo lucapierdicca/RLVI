@@ -82,10 +82,12 @@ class Grid:
             done = 1.0
         else:
             reward = 5*(d_curr-d_next)
+            #--------
             if reward == 0:
                 cyan = self.statelbl_to_img[str(self.state[0])+str(self.state[1])+self.id_to_orie[self.state[2]]][1]
                 if cyan: reward = +10
                 else: reward = -10
+            #--------
             done = 0.0
 
         return list(self.state), reward, done

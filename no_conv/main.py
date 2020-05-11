@@ -121,9 +121,11 @@ def eval_loop(sess, Q_op, s_ph, n_episode, max_episode, epsilon):
                 episode_step_counter+=1
 
                 if d or episode_step_counter == max_episode:
-                    b_r.append(episode_reward)
-                    b_sc.append(episode_step_counter)
                     break
+            
+            print("policy: %s - episode: %d - reward: %d" % (p,episode+1,episode_reward))
+            b_r.append(episode_reward)
+            b_sc.append(episode_step_counter)
 
 
         policies[p] = [stat.mean(b_r),
@@ -143,6 +145,8 @@ TRAIN = True
 env = Grid()
 
 if TRAIN:
+
+    print("START TRAINING")
 
     # init training parameters
     n_episode = 50000
@@ -166,6 +170,8 @@ if TRAIN:
         max_episode)
 
 else:
+
+    print("START EVALUATION")
 
     n_episode = 100
     max_episode = 1000

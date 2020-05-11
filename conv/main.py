@@ -148,9 +148,11 @@ def eval_loop(sess, Q_op, s_ph, n_episode, max_episode, epsilon):
                 episode_step_counter+=1
 
                 if d or episode_step_counter == max_episode:
-                    b_r.append(episode_reward)
-                    b_sc.append(episode_step_counter)
                     break
+            
+            print("policy: %s - episode: %d - reward: %d" % (p,episode+1,episode_reward))
+            b_r.append(episode_reward)
+            b_sc.append(episode_step_counter)
 
 
         policies[p] = [stat.mean(b_r),
