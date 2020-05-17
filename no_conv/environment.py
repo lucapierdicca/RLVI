@@ -28,7 +28,7 @@ class Grid:
         self.goal_state = [1,3,1]
 
         self.lr = np.array([6,0])
-        self.g = np.array(self.goal_state([0:1]))
+        self.g = np.array([self.goal_state[0],self.goal_state[1]])
         self.d = np.linalg.norm(g-lr)
         
         self.state = self.init_state
