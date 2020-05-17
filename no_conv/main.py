@@ -98,12 +98,16 @@ def eval_loop(sess, Q_op, s_ph, n_episode, max_episode, epsilon):
     for p in policies.keys():
         b_r = []
         b_sc = []
+        
+
 
         for episode in range(n_episode):
             episode_reward=0
             episode_step_counter=0
+            a_list = []
             
             s = env.reset()
+            a_list.append(s)
 
             while True:
                 if p == 'random': a = np.random.randint(0, env.n_actions)
@@ -119,11 +123,14 @@ def eval_loop(sess, Q_op, s_ph, n_episode, max_episode, epsilon):
                 
                 episode_reward+=r
                 episode_step_counter+=1
+                a_list.append(a)
+                a_list.append(s)
 
                 if d or episode_step_counter == max_episode:
                     break
             
             print("policy: %s - episode: %d - reward: %d" % (p,episode+1,episode_reward))
+            print(a_list)
             b_r.append(episode_reward)
             b_sc.append(episode_step_counter)
 
@@ -173,9 +180,9 @@ else:
 
     print("START EVALUATION")
 
-    n_episode = 100
+    n_episode = 10
     max_episode = 1000
-    epsilon = 0.05
+    epsilon = 0.01
 
     # start evaluation
     session,Q_op,s_ph = DQN.restore()
