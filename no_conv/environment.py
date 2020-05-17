@@ -90,7 +90,7 @@ class Grid:
         
         if self.state == self.goal_state:
             done = 1.0
-        else
+        else:
             done = 0.0
         
         return list(self.state), reward, done
