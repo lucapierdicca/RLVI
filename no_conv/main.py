@@ -35,6 +35,7 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
 
             s_, r, d = env.step(a)
 
+            #print(s,a,s_,r)
             agent.store_transition(s, a, r, s_, d)
 
             ########################################
@@ -182,7 +183,7 @@ else:
 
     n_episode = 10
     max_episode = 1000
-    epsilon = 0.01
+    epsilon = 0.05
 
     # start evaluation
     session,Q_op,s_ph = DQN.restore()

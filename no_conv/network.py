@@ -151,9 +151,9 @@ class DQN:
     def restore():
         # restore the last weights and the graph
         sess = tf.Session()
-        saver = tf.train.import_meta_graph('./stop_reward/graph/graph.meta')
+        saver = tf.train.import_meta_graph('./paraboloid_reward_noorie/graph/graph.meta')
         
-        saver.restore(sess, tf.train.latest_checkpoint("./stop_reward/weights/"))
+        saver.restore(sess, tf.train.latest_checkpoint("./paraboloid_reward_noorie/weights/"))
 
         graph = tf.get_default_graph()
         s = graph.get_tensor_by_name('s:0')

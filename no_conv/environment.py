@@ -88,7 +88,7 @@ class Grid:
 
         reward = -20.0/np.power(self.d,2)*(np.power(self.state[0]-1,2)+np.power(self.state[1]-3,2))
         
-        if self.state == self.goal_state:
+        if self.state[:2] == self.goal_state[:2]:
             done = 1.0
         else:
             done = 0.0
