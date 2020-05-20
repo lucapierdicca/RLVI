@@ -30,6 +30,11 @@ class Grid:
         lr = np.array([6,0])
         g = np.array([self.goal_state[0],self.goal_state[1]])
         self.d = np.linalg.norm(g-lr)
+
+        self.o = {  0:np.array([[1],[0]]),
+                    1:np.array([[0],[1]]),
+                    2:np.array([[-1],[0]]),
+                    3:np.array([[0],[-1]])}
         
         self.state = self.init_state
 
@@ -86,9 +91,20 @@ class Grid:
         #     #-------
         #     done = 0.0
 
-        reward = -20.0/np.power(self.d,2)*(np.power(self.state[0]-1,2)+np.power(self.state[1]-3,2))
-        
-        if self.state[:2] == self.goal_state[:2]:
+        x = self.state[0]-1
+        y = self.state[1]-3
+        m = -20.0
+        reward = m/np.power(self.d,2)*(np.power(x,2)+np.power(y,2))
+        reward_orie = 0
+
+        if x!=0 and y!=0:
+            g = np.array([[(2*m*x)/np.power(self.d,2)],[(2*m*y)/np.power(self.d,2)]])
+            g = g/np.linalg.norm(g)
+            reward_orie = 0.5*reward*-np.dot(self.o[self.state[2]].T,g)[0][0]
+
+        reward+=reward_orie
+
+        if self.state == self.goal_state:
             done = 1.0
         else:
             done = 0.0
