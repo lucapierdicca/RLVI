@@ -164,7 +164,7 @@ def eval_loop(sess, Q_op, s_ph, n_episode, max_episode, epsilon):
 
 #--------------------------------------------
 
-TRAIN = False
+TRAIN = True
 
 # init environment
 env = Grid()
