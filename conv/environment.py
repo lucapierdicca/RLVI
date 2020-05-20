@@ -74,20 +74,38 @@ class Grid:
                 elif self.state[2] == 2: self.state[2] = 1
                 elif self.state[2] == 3: self.state[2] = 2
         
-        # d(t) from the target
-        d_next = np.power(np.power(self.state[0]-self.goal_state[0],2)+np.power(self.state[1]-self.goal_state[1],2),0.5)
+        # # d(t) from the target
+        # d_next = np.power(np.power(self.state[0]-self.goal_state[0],2)+np.power(self.state[1]-self.goal_state[1],2),0.5)
+
+        # if self.state == self.goal_state:
+        #     reward = 50.0
+        #     done = 1.0
+        # else:
+        #     reward = 5*(d_curr-d_next)
+        #     #--------
+        #     if reward == 0:
+        #         cyan = self.statelbl_to_img[str(self.state[0])+str(self.state[1])+self.id_to_orie[self.state[2]]][1]
+        #         if cyan: reward = +10
+        #         else: reward = -10
+        #     #--------
+        #     done = 0.0
+
+        x = self.state[0]-1
+        y = self.state[1]-3
+        m = -20.0
+        reward = m/np.power(self.d,2)*(np.power(x,2)+np.power(y,2))
+        reward_orie = 0
+
+        if x!=0 and y!=0:
+            g = np.array([[(2*m*x)/np.power(self.d,2)],[(2*m*y)/np.power(self.d,2)]])
+            g = g/np.linalg.norm(g)
+            reward_orie = 0.5*reward*-np.dot(self.o[self.state[2]].T,g)[0][0]
+
+        reward+=reward_orie
 
         if self.state == self.goal_state:
-            reward = 50.0
             done = 1.0
         else:
-            reward = 5*(d_curr-d_next)
-            #--------
-            if reward == 0:
-                cyan = self.statelbl_to_img[str(self.state[0])+str(self.state[1])+self.id_to_orie[self.state[2]]][1]
-                if cyan: reward = +10
-                else: reward = -10
-            #--------
             done = 0.0
 
         return list(self.state), reward, done

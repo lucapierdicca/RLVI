@@ -130,7 +130,7 @@ def eval_loop(sess, Q_op, s_ph, n_episode, max_episode, epsilon):
                 if d or episode_step_counter == max_episode:
                     break
             
-            print("policy: %s - episode: %d - reward: %d" % (p,episode+1,episode_reward))
+            print("policy: %s - episode: %d - reward: %d - step: %d" % (p,episode+1,episode_reward,episode_step_counter))
             #print(a_list)
             b_r.append(episode_reward)
             b_sc.append(episode_step_counter)
@@ -147,7 +147,7 @@ def eval_loop(sess, Q_op, s_ph, n_episode, max_episode, epsilon):
 
 #--------------------------------------------
 
-TRAIN = True
+TRAIN = False
 
 # init environment
 env = Grid()
@@ -185,7 +185,7 @@ else:
     max_episode = 1000
     epsilon = 0.05
 
-    # start evaluation
+    # start evaluation 
     session,Q_op,s_ph = DQN.restore()
 
     policy_score = eval_loop(session,Q_op,s_ph,
