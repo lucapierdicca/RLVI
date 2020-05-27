@@ -167,7 +167,7 @@ def eval_loop(sess, Q_op, s_ph, n_episode, max_episode, epsilon):
 
 #--------------------------------------------
 
-TRAIN = False
+TRAIN = True
 
 # init environment
 env = Grid()
@@ -237,7 +237,7 @@ else:
         
     trajectories = np.array(trajectories)
 
-    
+
 
     fig1 = plt.figure()
     ax = fig1.add_subplot(111)
