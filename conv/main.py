@@ -111,19 +111,22 @@ def eval_loop(sess, Q_op, s_ph, n_episode, max_episode, epsilon):
     statelbl_to_img, id_to_orie = env.get_renders()
 
     #evaluation
-    policies = {'trained':[],'random':[]}
+    data = {'trained':[],'random':[]}
     
-    for p in policies.keys():
+    for p in data.keys():
         b_r = []
         b_sc = []
+        trajectories = []
 
         for episode in range(n_episode):
             episode_reward=0
             episode_step_counter=0
+            t = []
             
             reset_history()
             s = env.reset()
             history.append(s)
+            t.append(s)
 
             while True:
                 if p == 'random': a = np.random.randint(0, env.n_actions)
@@ -143,28 +146,28 @@ def eval_loop(sess, Q_op, s_ph, n_episode, max_episode, epsilon):
 
                 s_, r, d = env.step(a)
                 history.append(s_)
+
+                t.append(s_)
                 
                 episode_reward+=r
                 episode_step_counter+=1
 
-                if d or episode_step_counter == max_episode:
+                if d or episode_step_counter == max_episode-1:
                     break
             
-            print("policy: %s - episode: %d - reward: %d" % (p,episode+1,episode_reward))
+            print("policy: %s - episode: %d - reward: %d - step: %d" % (p,episode+1,episode_reward,episode_step_counter+1))
             b_r.append(episode_reward)
-            b_sc.append(episode_step_counter)
+            b_sc.append(episode_step_counter+1)
+            trajectories.append(t)
 
 
-        policies[p] = [stat.mean(b_r),
-                       stat.variance(b_r),
-                       stat.mean(b_sc),
-                       stat.variance(b_sc)]
+        data[p] = [b_r,b_sc,trajectories]
 
-    return policies
+    return data
 
 #--------------------------------------------
 
-TRAIN = True
+TRAIN = False
 
 # init environment
 env = Grid()
@@ -200,34 +203,101 @@ if TRAIN:
 else:
 
     n_episode = 100
-    max_episode = 1000
+    max_episode = 50
     epsilon = 0.05
 
     # start evaluation
     session,Q_op,h_ph = DQN.restore()
 
-    policy_score = eval_loop(session,Q_op,h_ph,
+    data = eval_loop(session,Q_op,h_ph,
                              n_episode,
                              max_episode,
                              epsilon)
 
     print("Random")
-    print("Avg R (%.2f - %.2f) - Avg length (%d - %.2f)" % (policy_score['random'][0],policy_score['random'][1],
-                                                            policy_score['random'][2],policy_score['random'][3]))
+    print("Avg R (%.2f - %.2f) - Avg length (%d - %.2f)" % (stat.mean(data['random'][0]),stat.variance(data['random'][0]),
+                                                            stat.mean(data['random'][1]),stat.variance(data['random'][1])))
 
     print("Trained")
-    print("Avg R (%.2f - %.2f) - Avg length (%d - %.2f)" % (policy_score['trained'][0],policy_score['trained'][1],
-                                                            policy_score['trained'][2],policy_score['trained'][3]))
+    print("Avg R (%.2f - %.2f) - Avg length (%d - %.2f)" % (stat.mean(data['trained'][0]),stat.variance(data['trained'][0]),
+                                                            stat.mean(data['trained'][1]),stat.variance(data['trained'][1])))
 
 
-# Plain Reward
-# Random
-# Avg R (-1309.97 - 1695645.17) - Avg length (360 - 109818.50)
-# Trained
-# Avg R (-9840.90 - 4121.21) - Avg length (1000 - 0.00)
 
-# Stop reward
-# Random
-# Avg R (-909.51 - 1007706.35) - Avg length (258 - 63487.68)
-# Trained
-# Avg R (1102.71 - 1450089.28) - Avg length (218 - 36554.24)
+    #graphs
+    import matplotlib.pyplot as plt
+
+    trajectories = data['trained'][2]
+    max_len = max(data['trained'][1])
+
+    for i in range(len(trajectories)):
+        if len(trajectories[i])<max_len:
+            pad = [[-1,-1,-1]]*(max_len-len(trajectories[i]))
+            trajectories[i] = trajectories[i]+pad
+        
+    trajectories = np.array(trajectories)
+
+    
+
+    fig1 = plt.figure()
+    ax = fig1.add_subplot(111)
+    ax.set_aspect(aspect='equal')
+    
+
+    for t in trajectories:
+        x = t[:,0]; x = x[x != -1]; x = ((x+0.5)-0.2)+0.4*np.random.uniform();
+        y = t[:,1]; y = y[y != -1]; y = ((y+0.5)-0.2)+0.4*np.random.uniform();
+        ax.plot( x, 
+                 y,
+                 '-',
+                 c='blue',
+                 linewidth=0.5,
+                 alpha =0.1)
+
+    # modal_t = []
+    # for t in range(max_len):
+    #     xy = trajectories[:,t,:2]; xy = xy[xy[:,0]!=-1];
+    #     xy_count = {}
+    #     for i in xy:
+    #         if tuple(i) in xy_count: xy_count[tuple(i)] +=1
+    #         else: xy_count[tuple(i)]=1
+    #     xy = sorted(xy_count.items(), key=lambda items: items[1])
+    #     modal_t.append(xy[-1][0])
+
+
+    plt.xlim([0,7])
+    plt.ylim([0,7])
+    plt.grid(True)
+    plt.title('Position trajectories')
+    
+
+    fig2 = plt.figure()
+    
+    ax = fig2.add_subplot(311)
+    #ax.set_xlabel('step')
+    ax.set_ylim([0,6])
+    ax.set_xlim([0,50])
+    ax.set_ylabel('x')
+    for t in trajectories:
+        x = t[:,0]; x = x[x != -1]
+        ax.plot(x,'-',c='blue',alpha = 0.1,linewidth=0.5)
+
+    ax = fig2.add_subplot(312)
+    ax.set_ylim([0,6])
+    ax.set_xlim([0,50])
+    ax.set_ylabel('y')
+    for t in trajectories:
+        y = t[:,1]; y = y[y != -1]
+        ax.plot(y,'-',c='blue',alpha = 0.1,linewidth=0.5)
+    
+    ax = fig2.add_subplot(313)
+    ax.set_ylim([0,3])
+    ax.set_xlim([0,50])
+    ax.set_ylabel('theta')
+    for t in trajectories:
+        theta = t[:,2]; theta = theta[theta != -1];
+        ax.plot(theta,'-',c='blue',alpha = 0.1,linewidth=0.5)   
+
+    
+   
+    plt.show()

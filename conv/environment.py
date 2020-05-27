@@ -34,7 +34,7 @@ class Grid:
         # state_img = [height,width,depth] (shape)
         self.init_state = [0,0,0]
         self.goal_state = [1,3,1]
-        
+
         lr = np.array([6,0])
         g = np.array([self.goal_state[0],self.goal_state[1]])
         self.d = np.linalg.norm(g-lr)
@@ -102,13 +102,19 @@ class Grid:
         x = self.state[0]-1
         y = self.state[1]-3
         m = -20.0
+        alpha=0.2
         reward = m/np.power(self.d,2)*(np.power(x,2)+np.power(y,2))
         reward_orie = 0
+        
+        g = np.array([[(2*m*x)/np.power(self.d,2)],[(2*m*y)/np.power(self.d,2)]])
+        
+        if x==0 and y==0:
+            reward = 1
+            g=np.array([[0],[1]])
+            alpha=-4
 
-        if x!=0 and y!=0:
-            g = np.array([[(2*m*x)/np.power(self.d,2)],[(2*m*y)/np.power(self.d,2)]])
-            g = g/np.linalg.norm(g)
-            reward_orie = 0.5*reward*-np.dot(self.o[self.state[2]].T,g)[0][0]
+        g = g/np.linalg.norm(g)
+        reward_orie = alpha*reward*(-0.5*np.dot(self.o[self.state[2]].T,g)[0][0]+0.5)
 
         reward+=reward_orie
 

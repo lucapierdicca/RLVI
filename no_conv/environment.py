@@ -94,13 +94,19 @@ class Grid:
         x = self.state[0]-1
         y = self.state[1]-3
         m = -20.0
+        alpha=0.2
         reward = m/np.power(self.d,2)*(np.power(x,2)+np.power(y,2))
         reward_orie = 0
 
-        if x!=0 and y!=0:
-            g = np.array([[(2*m*x)/np.power(self.d,2)],[(2*m*y)/np.power(self.d,2)]])
-            g = g/np.linalg.norm(g)
-            reward_orie = 0.5*reward*-np.dot(self.o[self.state[2]].T,g)[0][0]
+        g = np.array([[(2*m*x)/np.power(self.d,2)],[(2*m*y)/np.power(self.d,2)]])
+        
+        if x==0 and y==0:
+            reward = 1
+            g=np.array([[0],[1]])
+            alpha=-4
+
+        g = g/np.linalg.norm(g)
+        reward_orie = alpha*reward*(-0.5*np.dot(self.o[self.state[2]].T,g)[0][0]+0.5)
 
         reward+=reward_orie
 
@@ -116,5 +122,73 @@ class Grid:
         pass
 
 
-env = Grid()
-print(env.statelbl_to_img)
+# def r(l):
+#     return range(l[0],l[1]+1) 
+
+# a = [0,10]
+# b = [1,9]
+# c = [2,8]
+# d = [3,7]
+# e = [4,6]
+# f = 5
+# states = {0:[],1:[],2:[],3:[],4:[],5:[]}
+# values = {0:[],1:[],2:[],3:[],4:[],5:[]}
+
+# for i in range(7):
+#     for j in range(7):
+#         for k in range(4):
+#             if (i+4 in a and j+2 in r(a)) or ((j+2 in a and i+4 in r(a))):
+#                 states[0].append([i,j,k])
+#             elif (i+4 in b and j+2 in r(b)) or ((j+2 in b and i+4 in r(b))):
+#                 states[1].append([i,j,k])
+#             elif (i+4 in c and j+2 in r(c)) or ((j+2 in c and i+4 in r(c))):
+#                 states[2].append([i,j,k])
+#             elif (i+4 in d and j+2 in r(d)) or ((j+2 in d and i+4 in r(d))):
+#                 states[3].append([i,j,k])
+#             elif (i+4 in e and j+2 in r(e)) or ((j+2 in e and i+4 in r(e))):
+#                 states[4].append([i,j,k])
+#             elif i+4 == 5 and j+2 == 5:
+#                 states[5].append([i,j,k])
+# from pprint import pprint
+# pprint(states)
+# m = -20
+# goal_state = [1,3,1]
+
+# lr = np.array([6,0])
+# g = np.array([goal_state[0],goal_state[1]])
+# d = np.linalg.norm(g-lr)
+# print(np.power(d,2))
+
+# o = {  0:np.array([[1],[0]]),
+#             1:np.array([[0],[1]]),
+#             2:np.array([[-1],[0]]),
+#             3:np.array([[0],[-1]])}
+
+# alpha=0.2
+# for k,v in states.items():
+#     for s in v:
+#         x = s[0]-1
+#         y = s[1]-3
+        
+#         reward = m/np.power(d,2)*(np.power(x,2)+np.power(y,2))
+#         reward_orie = 0
+#         g = np.array([[(2*m*x)/np.power(d,2)],[(2*m*y)/np.power(d,2)]])
+        
+#         if x==0 and y==0:
+#             reward = 1
+#             g=np.array([[0],[1]])
+#             alpha=-4
+
+#         g = g/np.linalg.norm(g)
+#         reward_orie = alpha*reward*(-0.5*np.dot(o[s[2]].T,g)[0][0]+0.5)
+
+#         reward+=reward_orie
+#         values[k].append(reward)
+
+# print(values[5])
+# import matplotlib.pyplot as plt
+
+# for k,v in values.items():
+#     plt.plot(v)
+
+# plt.show()
