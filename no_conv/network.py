@@ -35,7 +35,7 @@ class DQN:
         self.copy_vars()
 
 
-        # tf.summary.FileWriter("logs/", self.sess.graph)
+        tf.summary.FileWriter("logs/", self.sess.graph)
 
         
 

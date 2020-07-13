@@ -149,6 +149,8 @@ class Grid:
 #                 states[4].append([i,j,k])
 #             elif i+4 == 5 and j+2 == 5:
 #                 states[5].append([i,j,k])
+
+
 # from pprint import pprint
 # pprint(states)
 # m = -20
@@ -164,28 +166,23 @@ class Grid:
 #             2:np.array([[-1],[0]]),
 #             3:np.array([[0],[-1]])}
 
-# alpha=0.2
+# #f = m/np.power(d,2)*(np.power(x,2)+np.power(y,2))
+
+
 # for k,v in states.items():
 #     for s in v:
 #         x = s[0]-1
 #         y = s[1]-3
         
-#         reward = m/np.power(d,2)*(np.power(x,2)+np.power(y,2))
-#         reward_orie = 0
-#         g = np.array([[(2*m*x)/np.power(d,2)],[(2*m*y)/np.power(d,2)]])
+#         df = np.array([[(2*m*x)/np.power(d,2)],[(2*m*y)/np.power(d,2)]])
         
 #         if x==0 and y==0:
-#             reward = 1
-#             g=np.array([[0],[1]])
-#             alpha=-4
+#             df=np.array([[0],[1]])
 
-#         g = g/np.linalg.norm(g)
-#         reward_orie = alpha*reward*(-0.5*np.dot(o[s[2]].T,g)[0][0]+0.5)
+#         reward = np.dot(o[s[2]].T,df)[0][0]
 
-#         reward+=reward_orie
 #         values[k].append(reward)
 
-# print(values[5])
 # import matplotlib.pyplot as plt
 
 # for k,v in values.items():

@@ -37,7 +37,7 @@ class DQN:
         self.sess.run(tf.global_variables_initializer())
         self.copy_vars()
 
-        # tf.summary.FileWriter("logs/", self.sess.graph)
+        tf.summary.FileWriter("logs/", self.sess.graph)
 
 
     def create_NNs(self):
@@ -74,16 +74,7 @@ class DQN:
                 trainable=True
             )           
 
-            # conv3_e = tf.layers.conv2d(   # shape (9, 9, 64)
-            #     inputs=conv2_e,
-            #     filters=64,
-            #     kernel_size=3,
-            #     strides=1,
-            #     padding='same',
-            #     activation=tf.nn.relu,
-            #     kernel_initializer=contrib.layers.xavier_initializer(uniform=False),
-            #     trainable=True
-            # )       
+  
 
             flat_e = tf.layers.flatten(conv2_e, data_format='channels_last')
             fc1_e = tf.layers.dense(flat_e, self.hidden_units, tf.nn.relu, trainable=True)
@@ -93,7 +84,7 @@ class DQN:
 
         # ------------------ Conv Q_tgt ------------------
         with tf.variable_scope('Q_tgt'):
-            conv1_t = tf.layers.conv2d(   # shape (240, 240, 3*n_history)
+            conv1_t = tf.layers.conv2d(  
                 inputs=self.h_,
                 filters=8,
                 kernel_size=19,
@@ -101,9 +92,9 @@ class DQN:
                 padding='same',
                 activation=tf.nn.relu,
                 trainable=False
-            )           # -> (20, 20, 32)
+            )          
 
-            conv2_t = tf.layers.conv2d(   # shape (20, 20, 32)
+            conv2_t = tf.layers.conv2d(   
                 inputs=conv1_t,
                 filters=16,
                 kernel_size=9,
@@ -111,17 +102,8 @@ class DQN:
                 padding='same',
                 activation=tf.nn.relu,
                 trainable=False
-            )           # -> (9, 9, 64)
+            )           
 
-            # conv3_t = tf.layers.conv2d(   # shape (9, 9, 64)
-            #     inputs=conv2_t,
-            #     filters=64,
-            #     kernel_size=3,
-            #     strides=1,
-            #     padding='same',
-            #     activation=tf.nn.relu,
-            #     trainable=False
-            # )           # -> (7, 7, 64)
 
             flat_t = tf.layers.flatten(conv2_t, data_format='channels_last')
             fc1_t = tf.layers.dense(flat_t, self.hidden_units, tf.nn.relu, trainable=False)
@@ -239,9 +221,9 @@ class DQN:
     def restore():
         # restore the last weights and the graph
         sess = tf.Session()
-        saver = tf.train.import_meta_graph('./paraboloid_reward/graph/graph.meta')
+        saver = tf.train.import_meta_graph('./paraboloid_new_reward/graph/graph.meta')
         
-        saver.restore(sess, tf.train.latest_checkpoint("./paraboloid_reward/weights"))
+        saver.restore(sess, tf.train.latest_checkpoint("./paraboloid_new_reward/weights"))
 
         graph = tf.get_default_graph()
         h = graph.get_tensor_by_name('h:0')

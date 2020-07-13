@@ -35,7 +35,7 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
 
             s_, r, d = env.step(a)
 
-            #print(s,a,s_,r)
+            print(s,a,s_,r)
             agent.store_transition(s, a, r, s_, d)
 
             ########################################
@@ -167,10 +167,10 @@ if TRAIN:
                 hidden_units=128)
         
     # start training
-    train_loop(n_episode, 
-        offset_train, 
-        offset_copy,
-        max_episode)
+    # train_loop(n_episode, 
+    #     offset_train, 
+    #     offset_copy,
+    #     max_episode)
 
 else:
 

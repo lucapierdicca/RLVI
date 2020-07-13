@@ -40,6 +40,7 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
         s = env.reset()
         history.append(s)
         h = list(history)
+        env.reset_reward_h()
 
         _, max_Q, argmax_Q = agent.get_action(h, statelbl_to_img, id_to_orie)
 
@@ -48,6 +49,7 @@ def train_loop(n_episode, offset_train, offset_copy, max_episode):
             a, _,_ = agent.get_action(h, statelbl_to_img, id_to_orie)
 
             s_, r, d = env.step(a)
+            #print(r)
             history.append(s_)
             h_ = list(history)
 
