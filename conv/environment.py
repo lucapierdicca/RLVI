@@ -134,8 +134,8 @@ class Grid:
             done = 0.0
 
         self.reward_h.append(reward)
-        print(self.reward_h)
-        
+        #print(self.reward_h)
+
         return list(self.state), sum(self.reward_h), done
 
 
