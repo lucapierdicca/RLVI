@@ -169,7 +169,7 @@ def eval_loop(sess, Q_op, s_ph, n_episode, max_episode, epsilon):
 
 #--------------------------------------------
 
-TRAIN = True
+TRAIN = False
 
 # init environment
 env = Grid()
@@ -206,7 +206,7 @@ else:
 
     n_episode = 100
     max_episode = 50
-    epsilon = 0.05
+    epsilon = 0.1
 
     # start evaluation
     session,Q_op,h_ph = DQN.restore()

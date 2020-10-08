@@ -221,9 +221,9 @@ class DQN:
     def restore():
         # restore the last weights and the graph
         sess = tf.Session()
-        saver = tf.train.import_meta_graph('./stop_reward_h/graph/graph.meta')
+        saver = tf.train.import_meta_graph('./paraboloid_reward_h/graph/graph.meta')
         
-        saver.restore(sess, tf.train.latest_checkpoint("./stop_reward_h/weights"))
+        saver.restore(sess, tf.train.latest_checkpoint("./paraboloid_reward_h/weights"))
 
         graph = tf.get_default_graph()
         h = graph.get_tensor_by_name('h:0')
